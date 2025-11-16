@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plan Your Journey - Velvet Routes</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      min-height: 100vh;
+      color: #1f2643;
+      overflow-x: hidden;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; position: relative; z-index: 2; }
+
+    /* header */
+    .header { text-align: center; color: #fff; margin-bottom: 32px; }
+    .header h1 {
+      font-size: 3rem; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .header p { opacity: .95; }
+
+    /* card shell */
+    .planning-card{
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 22px;
+      padding: 36px;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, .18);
+      backdrop-filter: blur(14px);
+    }
+
+    /* sections */
+    .form-section{ margin-bottom: 36px; }
+    .section-title{
+      display:flex; align-items:center; gap:12px; margin-bottom:18px;
+      font-size: 1.6rem; font-weight: 700; color:#2b2e4a;
+    }
+    .section-icon{
+      width:40px; height:40px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color:#fff; font-size:18px; box-shadow:0 6px 14px rgba(102,126,234,.35);
+    }
+
+    /* grid */
+    .form-grid{
+      display:grid; gap:20px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    /* inputs */
+    .form-group{ display:flex; flex-direction:column; }
+    .form-label{ font-weight:600; margin-bottom:8px; color:#525b76; }
+    .form-input{
+      background:#fff; border:2px solid #e7e8ef; border-radius:12px;
+      padding:14px 16px; font-size:1rem; transition: all .25s ease;
+    }
+    .form-input:focus{
+      outline:none; border-color:#6a11cb; box-shadow:0 0 0 4px rgba(106,17,203,.12);
+    }
+
+    /* budget cards (NO brackets anywhere) */
+    .budget-selector{
+      display:grid; gap:18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .budget-option{ position:relative; }
+    .budget-option input{ display:none; }
+
+    .budget-card{
+      background:#fff;
+      border:2px solid #e7e8ef;
+      border-radius:16px;
+      padding:20px 18px;
+      text-align:center;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+      box-shadow: 0 8px 20px rgba(15,23,42,.05);
+    }
+    .budget-card:hover{
+      transform: translateY(-4px);
+      border-color:#6a11cb;
+      box-shadow: 0 16px 32px rgba(106,17,203,.18);
+    }
+    .budget-option input:checked + .budget-card{
+      border-color:#6a11cb;
+      background: linear-gradient(135deg, #f3efff, #e8e4ff);
+    }
+    .budget-title{ font-weight:700; font-size:1.05rem; color:#2b2e4a; margin-bottom:6px; }
+    .budget-range{ font-size:1.2rem; font-weight:700; color:#6a11cb; }
+    .budget-description{ margin-top:8px; color:#5e6586; font-size:.92rem; }
+
+    /* travelers */
+    .travelers-section{
+      background:#f6f7fb; border:1px solid #eceffe;
+      border-radius:16px; padding:20px;
+    }
+    .traveler-counter{
+      background:#fff; border:1px solid #e8e9f3; border-radius:12px;
+      padding:18px; text-align:center; box-shadow:0 8px 16px rgba(31,38,67,.05);
+    }
+    .counter-label{ font-weight:600; color:#525b76; margin-bottom:8px; }
+    .counter-controls{ display:flex; align-items:center; justify-content:center; gap:14px; }
+    .counter-btn{
+      width:36px; height:36px; border-radius:50%; border:none; cursor:pointer;
+      background:#6a11cb; color:#fff; font-size:1.2rem; line-height:0;
+      transition: transform .12s ease, background .2s ease, opacity .2s ease;
+    }
+    .counter-btn:hover{ transform: scale(1.07); background:#5b19e6; }
+    .counter-btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+    .counter-value{ min-width:40px; font-size:1.25rem; font-weight:700; color:#2b2e4a; }
+
+    /* summary */
+    .summary-section{
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color:#fff; border-radius:16px; padding:26px; margin-top:8px;
+      box-shadow: 0 18px 36px rgba(37,117,252,.25);
+    }
+    .summary-grid{
+      display:grid; gap:18px; margin-top:14px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .summary-item{ text-align:center; }
+    .summary-label{ opacity:.9; font-size:.95rem; }
+    .summary-value{ font-weight:800; font-size:1.35rem; margin-top:4px; }
+
+    /* actions */
+    .action-buttons{ display:flex; gap:16px; justify-content:center; margin-top:30px; flex-wrap:wrap; }
+    .btn{
+      border:none; border-radius:12px; font-weight:700; cursor:pointer;
+      padding:14px 26px; font-size:1.05rem; transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn-primary{
+      color:#fff; background: linear-gradient(135deg, #ff8a00, #e52e71);
+      box-shadow:0 12px 28px rgba(229,46,113,.35);
+    }
+    .btn-primary:hover{ transform: translateY(-2px) scale(1.03); }
+    .btn-secondary{
+      background: transparent; color:#6a11cb; border:2px solid #6a11cb;
+    }
+    .btn-secondary:hover{ background:#6a11cb; color:#fff; }
+
+    /* floating decor (no brackets) */
+    .floating-elements{
+      position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+    }
+    .floating-circle{
+      position:absolute; border-radius:50%;
+      background: rgba(255,255,255,.16);
+      animation: float 6s ease-in-out infinite;
+      filter: blur(.3px);
+    }
+    @keyframes float{
+      0%,100%{ transform: translateY(0) rotate(0); }
+      50%{ transform: translateY(-18px) rotate(180deg); }
+    }
+
+    /* responsive */
+    @media (max-width: 768px){
+      .header h1{ font-size: 2.15rem; }
+      .planning-card{ padding:22px; }
+    }
+.home-button {
+    /* Basic button styling */
+    position: fixed; /* This makes the button stay in a fixed position on the screen */
+    top: 20px;       /* Change from 'bottom' to 'top' */
+    right: 20px;     /* 20 pixels from the right side of the screen */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    /* Look and feel from your image */
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Optional: Adds a hover effect for a better user experience */
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.arrow-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Navigation Header Styles */
+.nav-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(106, 17, 203, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.logo-text {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.signup-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.signup-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.logout-btn {
+    background: #ef4444;
+    color: white;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+.user-name {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.home-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Adjust body padding for fixed header */
+body {
+    padding-top: 80px;
+}
+  </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">V</div>
+                <span class="logo-text">Velvet Routes</span>
+            </div>
+            
+            <div class="nav-actions">
+                <!-- Authentication Buttons -->
+                <div class="auth-buttons">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" class="auth-btn login-btn">
+                        Login
+                    </button>
+                    <button id="signupBtn" onclick="window.location.href='signup.html'" class="auth-btn signup-btn">
+                        Sign Up
+                    </button>
+                    <button id="logoutBtn" onclick="logout()" class="auth-btn logout-btn hidden">
+                        Logout
+                    </button>
+                    <span id="userName" class="user-name hidden"></span>
+                </div>
+                
+                <a href="home.html" class="home-button">
+                    <span class="arrow-icon">&larr;</span> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+  <!-- floating background -->
+  <div class="floating-elements">
+    <div class="floating-circle" style="width:78px;height:78px; top:10%; left:12%; animation-delay:0s;"></div>
+    <div class="floating-circle" style="width:52px;height:52px; top:32%; right:9%; animation-delay:1.8s;"></div>
+    <div class="floating-circle" style="width:96px;height:96px; bottom:16%; left:10%; animation-delay:3.4s;"></div>
+    <div class="floating-circle" style="width:62px;height:62px; bottom:26%; right:20%; animation-delay:.9s;"></div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1>✈️ Velvet Routes</h1>
+      <p>Plan your perfect journey with precision and style</p>
+    </div>
+
+    <div class="planning-card">
+      <!-- Dates -->
+      <div class="form-section">
+        <h2 class="section-title"><span class="section-icon">📅</span>Travel Dates</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="departure-date">Departure Date</label>
+            <input type="date" class="form-input" id="departure-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="return-date">Return Date</label>
+            <input type="date" class="form-input" id="return-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="flexibility">Flexibility</label>
+            <select class="form-input" id="flexibility">
+              <option value="exact">Exact dates</option>
+              <option value="1day">± 1 day</option>
+              <option value="3days">± 3 days</option>
+              <option value="1week">± 1 week</option>
+              <option value="flexible">Completely flexible</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="form-section">
+        <h2 class="section-title"><span class="section-icon">💰</span>Budget Range</h2>
+
+        <div class="budget-selector">
+          <label class="budget-option">
+            <input type="radio" name="budget" value="economy" data-min="500" data-max="1500">
+            <div class="budget-card">
+              <div class="budget-title">Economy</div>
+              <div class="budget-range">$500 – $1,500</div>
+              <div class="budget-description">Essential comfort & experiences</div>
+            </div>
+          </label>
+
+          <label class="budget-option">
+            <input type="radio" name="budget" value="comfort" data-min="1500" data-max="3500" checked>
+            <div class="budget-card">
+              <div class="budget-title">Comfort</div>
+              <div class="budget-range">$1,500 – $3,500</div>
+              <div class="budget-description">Balanced luxury & value</div>
+            </div>
+          </label>
+
+          <label class="budget-option">
+            <input type="radio" name="budget" value="premium" data-min="3500" data-max="7500">
+            <div class="budget-card">
+              <div class="budget-title">Premium</div>
+              <div class="budget-range">$3,500 – $7,500</div>
+              <div class="budget-description">High-end accommodations</div>
+            </div>
+          </label>
+
+          <label class="budget-option">
+            <input type="radio" name="budget" value="luxury" data-min="7500" data-max="">
+            <div class="budget-card">
+              <div class="budget-title">Luxury</div>
+              <div class="budget-range">$7,500+</div>
+              <div class="budget-description">Ultimate indulgence</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Travelers -->
+      <div class="form-section">
+        <h2 class="section-title"><span class="section-icon">👥</span>Travelers</h2>
+        <div class="travelers-section">
+          <div class="form-grid">
+            <div class="traveler-counter">
+              <div class="counter-label">Adults</div>
+              <div class="counter-controls">
+                <button class="counter-btn" data-type="adults" data-change="-1">−</button>
+                <span class="counter-value" id="adults-count">2</span>
+                <button class="counter-btn" data-type="adults" data-change="1">+</button>
+              </div>
+            </div>
+
+            <div class="traveler-counter">
+              <div class="counter-label">Children</div>
+              <div class="counter-controls">
+                <button class="counter-btn" data-type="children" data-change="-1">−</button>
+                <span class="counter-value" id="children-count">0</span>
+                <button class="counter-btn" data-type="children" data-change="1">+</button>
+              </div>
+            </div>
+
+            <div class="traveler-counter">
+              <div class="counter-label">Infants</div>
+              <div class="counter-controls">
+                <button class="counter-btn" data-type="infants" data-change="-1">−</button>
+                <span class="counter-value" id="infants-count">0</span>
+                <button class="counter-btn" data-type="infants" data-change="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-section">
+        <h2 class="section-title" style="color:#fff;"><span class="section-icon">📋</span>Trip Summary</h2>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Duration</div>
+            <div class="summary-value" id="trip-duration">Select dates</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Total Travelers</div>
+            <div class="summary-value" id="total-travelers">2 people</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Budget Category</div>
+            <div class="summary-value" id="selected-budget">Comfort</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Estimated Total</div>
+            <div class="summary-value" id="estimated-total">$3,000 – $7,000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- actions -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="continue-btn" onclick="window.location.href = 'transport.html'">Continue to Transport →</button>
+        <button class="btn btn-secondary" id="save-btn" onclick="saveLater()">Save & Continue Later</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api-service.js"></script>
+  <script src="api-integrations.js"></script>
+  <script src="real-apis.js"></script>
+  <script src="Script.js"></script>
+  <script>
+    // Enhanced dates and budget functionality
+    const counters = { adults: 2, children: 0, infants: 0 };
+
+    function setCounterDisabledStates(){
+      document.querySelectorAll('.counter-btn').forEach(btn=>{
+        const type = btn.dataset.type;
+        const change = Number(btn.dataset.change);
+        if(type === 'adults' && change === -1){
+          btn.disabled = counters.adults <= 1;
+        } else if ((type === 'children' || type === 'infants') && change === -1){
+          btn.disabled = counters[type] <= 0;
+        } else {
+          btn.disabled = false;
+        }
+      });
+    }
+
+    function updateCounterUI(){
+      document.getElementById('adults-count').textContent = counters.adults;
+      document.getElementById('children-count').textContent = counters.children;
+      document.getElementById('infants-count').textContent = counters.infants;
+      setCounterDisabledStates();
+      updateSummary();
+      
+      // Update global travel data
+      travelData.adults = counters.adults;
+      travelData.children = counters.children;
+      travelData.infants = counters.infants;
+      saveTravelData();
+    }
+
+    function changeCounter(type, delta){
+      const next = counters[type] + delta;
+      if(type === 'adults' && next < 1) return;
+      if((type === 'children' || type === 'infants') && next < 0) return;
+      counters[type] = next;
+      updateCounterUI();
+    }
+    
+    // Make function globally available
+    window.changeCounter = changeCounter;
+
+    function updateDuration(){
+      const d = document.getElementById('departure-date').value;
+      const r = document.getElementById('return-date').value;
+
+      const out = document.getElementById('trip-duration');
+      if(!d || !r){ out.textContent = 'Select dates'; return; }
+
+      const start = new Date(d);
+      const end = new Date(r);
+
+      if(end < start){ 
+        out.textContent = 'Return must be after departure'; 
+        showNotification('Return date must be after departure date.', 'error');
+        return; 
+      }
+
+      const diffDays = Math.ceil((end - start)/(1000*60*60*24));
+      out.textContent = `${diffDays} day${diffDays>1?'s':''}`;
+      
+      // Update global travel data
+      travelData.departureDate = d;
+      travelData.returnDate = r;
+      travelData.duration = diffDays;
+      saveTravelData();
+    }
+
+    function updateBudgetSelection(){
+      // Update visual feedback for budget selection
+      document.querySelectorAll('.budget-option').forEach(option => {
+        const input = option.querySelector('input[type="radio"]');
+        const card = option.querySelector('.budget-card');
+        
+        if(input.checked){
+          card.style.transform = 'scale(1.02)';
+          card.style.borderWidth = '3px';
+        } else {
+          card.style.transform = 'scale(1)';
+          card.style.borderWidth = '2px';
+        }
+      });
+    }
+    
+    function updateSummary(){
+      // travelers
+      const total = counters.adults + counters.children + counters.infants;
+      document.getElementById('total-travelers').textContent = `${total} ${total===1?'person':'people'}`;
+
+      // budget
+      const sel = document.querySelector('input[name="budget"]:checked');
+      if(sel){
+        const card = sel.nextElementSibling;
+        const budgetTitle = card.querySelector('.budget-title').textContent;
+        document.getElementById('selected-budget').textContent = budgetTitle;
+
+        const min = Number(sel.dataset.min || 0);
+        const max = sel.dataset.max === "" ? null : Number(sel.dataset.max);
+
+        const estMin = Math.round(min * total);
+        const estMax = max ? Math.round(max * total) : Math.round(estMin * 2);
+
+        document.getElementById('estimated-total').textContent =
+          `$${estMin.toLocaleString()} – $${estMax.toLocaleString()}`;
+          
+        // Update global travel data
+        travelData.budget = sel.value;
+        travelData.budgetRange = { min: estMin, max: estMax };
+        saveTravelData();
+        
+        // Show notification when budget changes
+        // showNotification(`Budget updated to ${budgetTitle} category!`, 'success');
+      }
+
+      updateDuration();
+    }
+
+    async function proceed(){
+      const formData = {
+        departureDate: document.getElementById('departure-date').value,
+        returnDate: document.getElementById('return-date').value,
+        flexibility: document.getElementById('flexibility').value,
+        budget: document.querySelector('input[name="budget"]:checked')?.value,
+        travelers: {...counters}
+      };
+
+      if(!formData.departureDate || !formData.returnDate || !formData.budget){
+        showNotification('Please fill in departure date, return date, and budget.', 'warning');
+        return;
+      }
+      
+      showNotification('Proceeding to transport selection with your preferences!', 'success');
+      // Save data first
+      await saveTravelData();
+      
+      setTimeout(() => {
+        window.location.href = 'transport.html';
+      }, 1500);
+    }
+
+    function saveLater(){
+      showNotification('Your preferences have been saved! You can continue planning later.', 'success');
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // Load existing data
+      loadTravelData();
+      
+      // Update counters with saved data
+      counters.adults = travelData.adults || 2;
+      counters.children = travelData.children || 0;
+      counters.infants = travelData.infants || 0;
+      
+      // Set saved dates
+      if (travelData.departureDate) {
+        document.getElementById('departure-date').value = travelData.departureDate;
+      }
+      if (travelData.returnDate) {
+        document.getElementById('return-date').value = travelData.returnDate;
+      }
+      
+      // Set saved budget
+      if (travelData.budget) {
+        const budgetRadio = document.querySelector(`input[name="budget"][value="${travelData.budget}"]`);
+        if (budgetRadio) {
+          budgetRadio.checked = true;
+        }
+      }
+      
+      // date mins
+      const today = new Date().toISOString().split('T')[0];
+      const dep = document.getElementById('departure-date');
+      const ret = document.getElementById('return-date');
+      dep.min = today; ret.min = today;
+
+      dep.addEventListener('change', ()=>{ ret.min = dep.value || today; updateDuration(); });
+      ret.addEventListener('change', updateDuration);
+
+      // counters
+      document.querySelectorAll('.counter-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          changeCounter(btn.dataset.type, Number(btn.dataset.change));
+        });
+      });
+      
+      // Make changeCounter globally available as backup
+      window.changeCounter = changeCounter;
+
+      // budget radios
+      document.querySelectorAll('input[name="budget"]').forEach(r=>{
+        r.addEventListener('change', function(){
+          updateSummary();
+          // Force visual update of budget cards
+          updateBudgetSelection();
+        });
+      });
+      
+      // Initial budget selection update
+      updateBudgetSelection();
+
+      // buttons (functionality moved to onclick handlers for better control)
+      // Proceed function
+      window.proceedToNext = function() {
+        // Save current location data to localStorage before proceeding
+        saveLocationDataToStorage();
+        proceed();
+      };
+
+      // Save location data to localStorage
+      function saveLocationDataToStorage() {
+        try {
+          // Get current location from localStorage
+          const currentLocation = JSON.parse(localStorage.getItem('velvetRoutesCurrentLocation') || 'null');
+          
+          if (currentLocation) {
+            // Get form data
+            const departureDate = document.getElementById('departure-date').value;
+            const returnDate = document.getElementById('return-date').value;
+            const adults = document.getElementById('adults-count').textContent;
+            const children = document.getElementById('children-count').textContent;
+            const infants = document.getElementById('infants-count').textContent;
+            const budget = document.querySelector('input[name="budget"]:checked')?.value || 'comfort';
+            
+            // Create travel plan data
+            const travelPlan = {
+              destination: currentLocation.name,
+              city: currentLocation.capital || currentLocation.name,
+              country: currentLocation.name,
+              region: currentLocation.region,
+              departureDate: departureDate,
+              returnDate: returnDate,
+              adults: parseInt(adults),
+              children: parseInt(children),
+              infants: parseInt(infants),
+              budget: budget,
+              timestamp: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('velvetRoutesTravelPlan', JSON.stringify(travelPlan));
+            console.log('Travel plan saved to localStorage:', travelPlan);
+          }
+        } catch (error) {
+          console.error('Error saving location data:', error);
+        }
+      }
+      
+      // Save function
+      window.saveAndExit = function() {
+        saveLater();
+        setTimeout(() => {
+          window.location.href = 'planner.html';
+        }, 1000);
+      };
+      
+      document.getElementById('continue-btn').addEventListener('click', proceedToNext);
+      document.getElementById('save-btn').addEventListener('click', saveAndExit);
+
+      // initial UI
+      updateCounterUI();
+      updateSummary();
+    });
+
+    // Authentication Functions
+    function checkAuthStatus() {
+        const token = localStorage.getItem('velvetRoutesToken');
+        const user = localStorage.getItem('velvetRoutesUser');
+        
+        if (token && user) {
+            try {
+                const userData = JSON.parse(user);
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('signupBtn').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('userName').classList.remove('hidden');
+                document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                clearAuthData();
+            }
+        } else {
+            clearAuthData();
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('velvetRoutesToken');
+        localStorage.removeItem('velvetRoutesUser');
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('signupBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userName').classList.add('hidden');
+        
+        showMessage('Logged out successfully!', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'home.html';
+        }, 1000);
+    }
+
+    function clearAuthData() {
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('signupBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userName').classList.add('hidden');
+    }
+
+    function showMessage(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 
+            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Initialize authentication status when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuthStatus();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Transport - Velvet Routes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="global-colors.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated floating elements */
+    .floating-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+    
+    .floating-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 15s ease-in-out infinite;
+    }
+    
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      background: #a855f7;
+      top: 10%;
+      left: -5%;
+      animation-delay: 0s;
+    }
+    
+    .circle-2 {
+      width: 250px;
+      height: 250px;
+      background: #ec4899;
+      top: 60%;
+      right: -5%;
+      animation-delay: 3s;
+    }
+    
+    .circle-3 {
+      width: 200px;
+      height: 200px;
+      background: #f472b6;
+      bottom: 10%;
+      left: 10%;
+      animation-delay: 6s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(20px, -20px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 15px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.9);
+      font-weight: 400;
+    }
+
+    /* Step Indicator */
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 50px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .step {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .step.completed {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: white;
+      box-shadow: 0 8px 20px rgba(168,85,247,0.4);
+    }
+
+    .step.active {
+      background: linear-gradient(135deg, #f472b6, #a855f7);
+      color: white;
+      box-shadow: 0 12px 30px rgba(168,85,247,0.5);
+      transform: scale(1.1);
+    }
+
+    .step.pending {
+      background: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .step-line {
+      width: 80px;
+      height: 2px;
+      background: rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .step-line.active {
+      background: linear-gradient(90deg, #a855f7, #ec4899);
+    }
+
+    /* Transport Cards */
+    .transport-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+      animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .transport-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 24px;
+      padding: 35px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .transport-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.1));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .transport-card:hover::before {
+      opacity: 1;
+    }
+
+    .transport-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(255,255,255,0.6);
+      box-shadow: 0 20px 60px rgba(168,85,247,0.4);
+    }
+
+    .transport-card.active {
+      background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3));
+      border-color: #f472b6;
+      box-shadow: 0 25px 70px rgba(168,85,247,0.5);
+      transform: translateY(-10px) scale(1.02);
+    }
+
+    .transport-card input[type="radio"] {
+      display: none;
+    }
+
+    /* Card Icon */
+    .card-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: bounce 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .card-icon span {
+      display: inline-block;
+    }
+
+    /* Card Title */
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    /* Card Info */
+    .card-info {
+      color: rgba(255,255,255,0.9);
+      font-size: 1rem;
+      line-height: 1.8;
+      flex-grow: 1;
+    }
+
+    .info-item {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-item i {
+      font-size: 0.9rem;
+      width: 20px;
+    }
+
+    /* Price Badge */
+    .price-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(168,85,247,0.4);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Features List */
+    .features {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .feature-tag {
+      background: rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .transport-card:hover .feature-tag {
+      background: rgba(168,85,247,0.4);
+      border-color: #a855f7;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .btn {
+      padding: 18px 45px;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(102,126,234,0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Confirmation Message */
+    .confirmation-message {
+      text-align: center;
+      background: rgba(168,85,247,0.2);
+      backdrop-filter: blur(10px);
+      border: 2px solid #a855f7;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 30px 0;
+      color: white;
+      font-weight: 600;
+      display: none;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirmation-message.active {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .transport-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .step {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+
+      .step-line {
+        width: 40px;
+      }
+    }
+
+    /* Home Button */
+    .home-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 15px 30px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-bg">
+    <div class="floating-circle circle-1"></div>
+    <div class="floating-circle circle-2"></div>
+    <div class="floating-circle circle-3"></div>
+  </div>
+
+  <a href="home.html" class="home-btn">
+    ← Back to Home
+  </a>
+
+  <div class="container">
+    <div class="header">
+      <h1>🚀 Choose Your Transport</h1>
+      <p>Select the perfect mode of travel for your journey</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step completed">1</div>
+      <div class="step-line active"></div>
+      <div class="step completed">2</div>
+      <div class="step-line active"></div>
+      <div class="step active">3</div>
+      <div class="step-line pending"></div>
+      <div class="step pending">4</div>
+      <div class="step-line pending"></div>
+      <div class="step pending">5</div>
+    </div>
+
+    <!-- Confirmation Message -->
+    <div id="confirmation" class="confirmation-message"></div>
+
+    <!-- Transport Grid -->
+    <div class="transport-grid">
+      <label class="transport-card" for="flight">
+        <input type="radio" name="transport" id="flight" value="Flight"/>
+        <div class="price-badge">₹5000-12000</div>
+        <div class="card-icon">
+          <span>✈️</span>
+        </div>
+        <div class="card-title">Flight</div>
+        <div class="card-info">
+          <div class="info-item">
+            <i>⚡</i>
+            <span><strong>Speed:</strong> 600-900 km/h</span>
+          </div>
+          <div class="info-item">
+            <i>⏱️</i>
+            <span><strong>Duration:</strong> 1-4 hours</span>
+          </div>
+          <div class="info-item">
+            <i>⭐</i>
+            <span><strong>Comfort:</strong> High</span>
+          </div>
+        </div>
+        <div class="features">
+          <span class="feature-tag">Premium Seating</span>
+          <span class="feature-tag">In-flight Entertainment</span>
+          <span class="feature-tag">Fast</span>
+        </div>
+      </label>
+
+      <label class="transport-card" for="train">
+        <input type="radio" name="transport" id="train" value="Train"/>
+        <div class="price-badge">₹500-3000</div>
+        <div class="card-icon">
+          <span>🚄</span>
+        </div>
+        <div class="card-title">Train</div>
+        <div class="card-info">
+          <div class="info-item">
+            <i>⚡</i>
+            <span><strong>Speed:</strong> 80-200 km/h</span>
+          </div>
+          <div class="info-item">
+            <i>⏱️</i>
+            <span><strong>Duration:</strong> 4-12 hours</span>
+          </div>
+          <div class="info-item">
+            <i>⭐</i>
+            <span><strong>Comfort:</strong> Good</span>
+          </div>
+        </div>
+        <div class="features">
+          <span class="feature-tag">Scenic Views</span>
+          <span class="feature-tag">Sleeper Coaches</span>
+          <span class="feature-tag">Affordable</span>
+        </div>
+      </label>
+
+      <label class="transport-card" for="bus">
+        <input type="radio" name="transport" id="bus" value="Bus"/>
+        <div class="price-badge">₹200-1500</div>
+        <div class="card-icon">
+          <span>🚌</span>
+        </div>
+        <div class="card-title">Bus</div>
+        <div class="card-info">
+          <div class="info-item">
+            <i>⚡</i>
+            <span><strong>Speed:</strong> 60-100 km/h</span>
+          </div>
+          <div class="info-item">
+            <i>⏱️</i>
+            <span><strong>Duration:</strong> 3-10 hours</span>
+          </div>
+          <div class="info-item">
+            <i>⭐</i>
+            <span><strong>Comfort:</strong> Varies</span>
+          </div>
+        </div>
+        <div class="features">
+          <span class="feature-tag">Budget Friendly</span>
+          <span class="feature-tag">AC/Sleeper</span>
+          <span class="feature-tag">Flexible</span>
+        </div>
+      </label>
+
+      <label class="transport-card" for="car">
+        <input type="radio" name="transport" id="car" value="Car"/>
+        <div class="price-badge">Flexible</div>
+        <div class="card-icon">
+          <span>🚗</span>
+        </div>
+        <div class="card-title">Car</div>
+        <div class="card-info">
+          <div class="info-item">
+            <i>⚡</i>
+            <span><strong>Speed:</strong> 60-120 km/h</span>
+          </div>
+          <div class="info-item">
+            <i>⏱️</i>
+            <span><strong>Duration:</strong> Flexible</span>
+          </div>
+          <div class="info-item">
+            <i>⭐</i>
+            <span><strong>Comfort:</strong> Excellent</span>
+          </div>
+        </div>
+        <div class="features">
+          <span class="feature-tag">Private</span>
+          <span class="feature-tag">Flexible Stops</span>
+          <span class="feature-tag">Freedom</span>
+        </div>
+      </label>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="dates_and_budget.html" class="btn btn-secondary">
+        <span>← Back</span>
+      </a>
+      <button id="continueBtn" class="btn btn-primary" onclick="handleContinue()">
+        <span>Continue to Hotels →</span>
+      </button>
+    </div>
+  </div>
+
+<script src="api-service.js"></script>
+<script src="api-integrations.js"></script>
+<script src="real-apis.js"></script>
+<script src="Script.js"></script>
+  <script>
+    let selectedTransport = null;
+
+    // Add click event to cards
+    document.querySelectorAll('.transport-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const input = this.querySelector('input[type="radio"]');
+        if (input) {
+          input.checked = true;
+          handleSelection(input.value);
+        }
+      });
+    });
+
+    function handleSelection(value) {
+      selectedTransport = value;
+      
+      // Update card styling
+      document.querySelectorAll('.transport-card').forEach(card => {
+        const cardInput = card.querySelector('input[type="radio"]');
+        if (cardInput && cardInput.checked) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+
+      // Show confirmation
+      const confirmation = document.getElementById('confirmation');
+      confirmation.textContent = `✓ You selected ${value}!`;
+      confirmation.classList.add('active');
+      
+      // Save to global data
+      if (typeof travelData !== 'undefined') {
+        travelData.localTransport = value;
+        travelData.transportCost = { min: 200, max: 12000 };
+        saveTravelData();
+      }
+
+      // Show notification if available
+      if (typeof showNotification !== 'undefined') {
+        showNotification(`Selected: ${value}`, 'success');
+      }
+
+      // Hide confirmation after 3 seconds
+      setTimeout(() => {
+        confirmation.classList.remove('active');
+      }, 3000);
+    }
+
+    function handleContinue() {
+      if (!selectedTransport) {
+        if (typeof showNotification !== 'undefined') {
+          showNotification('Please select a transport option', 'warning');
+        } else {
+          alert('Please select a transport option first');
+        }
+        return;
+      }
+
+      // Navigate to hotel page
+      window.location.href = 'hotel.html';
+    }
+
+    // Load existing selection on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTravelData();
+      
+      if (travelData.localTransport) {
+        const input = document.querySelector(`input[value="${travelData.localTransport}"]`);
+        if (input) {
+          input.checked = true;
+          handleSelection(travelData.localTransport);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

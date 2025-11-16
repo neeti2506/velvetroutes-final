@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velvet Routes - AI Travel Itinerary Generator</title>
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(102, 126, 234, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(118, 75, 162, 0.2);
+        }
+
+        .glass-effect-alt {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .slide-content {
+            display: none;
+        }
+        
+        .slide-content.active {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.15), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .professional-accent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .text-accent {
+            color: #a78bfa;
+        }
+        
+        .border-accent {
+            border-color: #667eea;
+        }
+        
+        .bg-accent {
+            background-color: #5b21b6;
+        }
+        
+        .bg-accent:hover {
+            background-color: #4c1d95;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-inter overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 professional-accent rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">V</span>
+                </div>
+                <h1 class="text-2xl font-playfair font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Velvet Routes
+                </h1>
+            </div>
+            <ul class="flex gap-8 font-medium">
+                <li><a href="#features" class="hover:text-purple-400 transition-colors">Features</a></li>
+                <li><a href="#about" class="hover:text-purple-400 transition-colors">About</a></li>
+                <li><a href="Contact.html" class="hover:text-purple-400 transition-colors">Contact</a></li>
+                
+                <!-- Authentication Buttons -->
+                <li class="flex gap-3 ml-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="px-4 py-2 text-white border border-purple-300 rounded-lg hover:bg-purple-300 hover:text-purple-900 transition-all">
+                        Login
+                    </button>
+                    <button id="signupBtn" onclick="window.location.href='signup.html'" 
+                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all">
+                        Sign Up
+                    </button>
+                    <button id="logoutBtn" onclick="logout()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hidden">
+                        Logout
+                    </button>
+                    <span id="userName" class="text-white text-sm hidden"></span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen gradient-bg flex items-center">
+        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+            
+            <!-- Left Side - Main Content -->
+            <div class="space-y-8">
+                <h1 class="font-playfair text-6xl md:text-7xl font-bold leading-tight">
+                    Discover Your
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                        Perfect Journey
+                    </span>
+                </h1>
+                
+                <p class="text-xl text-gray-200 leading-relaxed max-w-2xl">
+                    Create personalized travel itineraries with AI-powered recommendations. 
+                    From hidden gems to popular destinations, plan your dream trip effortlessly.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="planner.html" class="bg-white text-purple-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all shadow-lg text-center">
+                        Start Planning
+                    </a>
+                    <a href="AboutUS.html" class="glass-effect px-8 py-4 rounded-full font-semibold hover:bg-purple-600 hover:bg-opacity-20 transition-all text-center">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Side - Interactive Box -->
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
+                
+                <!-- Slide Navigation -->
+                <div class="flex space-x-4 mb-6">
+                    <button onclick="showSlide(1)" id="tab1" class="px-4 py-2 rounded-full bg-purple-600 text-white font-medium transition-all">
+                        Destinations
+                    </button>
+                    <button onclick="showSlide(2)" id="tab2" class="px-4 py-2 rounded-full text-gray-300 hover:text-white transition-all">
+                        AI Planning
+                    </button>
+                    <button onclick="showSlide(3)" id="tab3" class="px-4 py-2 rounded-full text-gray-300 hover:text-white transition-all">
+                        Smart Budget
+                    </button>
+                </div>
+
+                <!-- Slide 1 -->
+                <div id="slide1" class="slide-content active space-y-4">
+                    <h3 class="text-2xl font-playfair font-bold">Discover Hidden Gems</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Explore curated destinations from bustling cities to serene beaches. 
+                        Our AI finds the perfect spots based on your preferences and travel style.
+                    </p>
+                    <div class="flex items-center space-x-4 pt-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
+                            🗺️
+                        </div>
+                        <div>
+                            <div class="font-semibold">1000+ Destinations</div>
+                            <div class="text-sm text-gray-400">Worldwide Coverage</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div id="slide2" class="slide-content space-y-4">
+                    <h3 class="text-2xl font-playfair font-bold">AI-Powered Planning</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Generate complete itineraries in seconds. Our smart algorithms consider 
+                        weather, local events, and your personal interests for the perfect trip.
+                    </p>
+                    <div class="flex items-center space-x-4 pt-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                            🤖
+                        </div>
+                        <div>
+                            <div class="font-semibold">Smart Recommendations</div>
+                            <div class="text-sm text-gray-400">Personalized for You</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div id="slide3" class="slide-content space-y-4">
+                    <h3 class="text-2xl font-playfair font-bold">Budget Optimization</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Travel more for less with our budget optimization tools. Find the best 
+                        deals on flights, hotels, and activities tailored to your spending plan.
+                    </p>
+                    <div class="flex items-center space-x-4 pt-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
+                            💰
+                        </div>
+                        <div>
+                            <div class="font-semibold">Save up to 40%</div>
+                            <div class="text-sm text-gray-400">On Travel Expenses</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-slate-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-playfair font-bold mb-4">Why Choose Velvet Routes</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Experience the future of travel planning with our cutting-edge features
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="feature-card glass-effect-alt p-6 rounded-2xl hover-lift group cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Smart Matching</h3>
+                    <p class="text-gray-400">AI matches destinations to your personality and preferences</p>
+                </div>
+
+                <div class="feature-card glass-effect-alt p-6 rounded-2xl hover-lift group cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">⚡</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Instant Itineraries</h3>
+                    <p class="text-gray-400">Generate complete travel plans in under 30 seconds</p>
+                </div>
+
+                <div class="feature-card glass-effect-alt p-6 rounded-2xl hover-lift group cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-sky-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🌍</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Global Coverage</h3>
+                    <p class="text-gray-400">Access to destinations and experiences worldwide</p>
+                </div>
+
+                <div class="feature-card glass-effect-alt p-6 rounded-2xl hover-lift group cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">📱</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Mobile Ready</h3>
+                    <p class="text-gray-400">Access your itineraries anywhere, anytime</p>
+                </div>
+
+                <div class="feature-card glass-effect-alt p-6 rounded-2xl hover-lift group cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🎨</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Custom Themes</h3>
+                    <p class="text-gray-400">Adventure, romance, family - trips tailored to your style</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-slate-900">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="glass-effect p-8 rounded-3xl">
+                    <h2 class="text-3xl font-playfair font-bold mb-6">The Future of Travel Planning</h2>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        Velvet Routes revolutionizes how you plan your journeys. Our AI-powered platform 
+                        combines machine learning with local insights to create unforgettable travel experiences.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>Personalized recommendations</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>Real-time updates and alerts</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>Collaborative trip planning</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-400">500K+</div>
+                        <div class="text-gray-400">Happy Travelers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-400">150+</div>
+                        <div class="text-gray-400">Countries Covered</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-400">4.9★</div>
+                        <div class="text-gray-400">User Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 gradient-bg">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-playfair font-bold mb-4">Get In Touch</h2>
+                <p class="text-xl text-gray-200">Ready to start your journey? We'd love to hear from you.</p>
+            </div>
+
+            <div class="glass-effect rounded-3xl p-8">
+                <form class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Your Name</label>
+                            <input type="text" class="w-full p-4 rounded-xl bg-white bg-opacity-10 border border-blue-400 border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Address</label>
+                            <input type="email" class="w-full p-4 rounded-xl bg-white bg-opacity-10 border border-blue-400 border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Subject</label>
+                        <input type="text" class="w-full p-4 rounded-xl bg-white bg-opacity-10 border border-blue-400 border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="What's this about?">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Message</label>
+                        <textarea rows="5" class="w-full p-4 rounded-xl bg-white bg-opacity-10 border border-blue-400 border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Tell us about your dream destination..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-white text-blue-900 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all shadow-lg">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Planner Modal -->
+    <div id="plannerModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            
+            <!-- Planner Header -->
+            <div class="gradient-bg p-6 rounded-t-3xl">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-playfair font-bold">Plan Your Perfect Trip</h2>
+                    <button onclick="closePlanner()" class="text-white hover:text-gray-300 text-2xl">&times;</button>
+                </div>
+            </div>
+
+            <!-- Planner Content -->
+            <div class="p-6">
+                
+                <!-- Step Navigation -->
+                <div class="flex mb-8 bg-slate-800 rounded-2xl p-2">
+                    <button onclick="showPlannerStep(1)" id="step1-btn" class="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-medium">
+                        Destination
+                    </button>
+                    <button onclick="showPlannerStep(2)" id="step2-btn" class="flex-1 py-3 px-4 rounded-xl text-gray-400 hover:text-white">
+                        Dates & Budget
+                    </button>
+                    <button onclick="showPlannerStep(3)" id="step3-btn" class="flex-1 py-3 px-4 rounded-xl text-gray-400 hover:text-white">
+                        Transport
+                    </button>
+                    <button onclick="showPlannerStep(4)" id="step4-btn" class="flex-1 py-3 px-4 rounded-xl text-gray-400 hover:text-white">
+                        Accommodation
+                    </button>
+                    <button onclick="showPlannerStep(5)" id="step5-btn" class="flex-1 py-3 px-4 rounded-xl text-gray-400 hover:text-white">
+                        Summary
+                    </button>
+                </div>
+
+                <!-- Step 1: Destination Selection -->
+                <div id="planner-step-1" class="planner-step">
+                    <h3 class="text-2xl font-bold mb-6">Choose Your Destination</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        
+                        <!-- Popular Destinations -->
+                        <div class="md:col-span-2">
+                            <h4 class="text-lg font-semibold mb-4 text-blue-400">Popular Destinations</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('Paris, France', '€800-1200')">
+                                    <div class="text-2xl mb-2">🗼</div>
+                                    <div class="font-semibold">Paris, France</div>
+                                    <div class="text-sm text-gray-400">From €800</div>
+                                </div>
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('Tokyo, Japan', '¥80000-120000')">
+                                    <div class="text-2xl mb-2">🏯</div>
+                                    <div class="font-semibold">Tokyo, Japan</div>
+                                    <div class="text-sm text-gray-400">From ¥80,000</div>
+                                </div>
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('New York, USA', '$1000-1500')">
+                                    <div class="text-2xl mb-2">🗽</div>
+                                    <div class="font-semibold">New York, USA</div>
+                                    <div class="text-sm text-gray-400">From $1,000</div>
+                                </div>
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('Goa, India', '₹25000-40000')">
+                                    <div class="text-2xl mb-2">🏖️</div>
+                                    <div class="font-semibold">Goa, India</div>
+                                    <div class="text-sm text-gray-400">From ₹25,000</div>
+                                </div>
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('Dubai, UAE', '$900-1400')">
+                                    <div class="text-2xl mb-2">🏙️</div>
+                                    <div class="font-semibold">Dubai, UAE</div>
+                                    <div class="text-sm text-gray-400">From $900</div>
+                                </div>
+                                <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-blue-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('London, UK', '£700-1100')">
+                                    <div class="text-2xl mb-2">🏰</div>
+                                    <div class="font-semibold">London, UK</div>
+                                    <div class="text-sm text-gray-400">From £700</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search & Filters -->
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4 text-blue-400">Search Destinations</h4>
+                            <input type="text" placeholder="Search for a city..." class="w-full p-3 rounded-xl bg-slate-800 text-white border border-blue-600 border-opacity-30 mb-4">
+                            
+                            <h5 class="font-semibold mb-3">Trip Type</h5>
+                            <div class="space-y-2 mb-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="tripType" value="adventure" class="mr-2">
+                                    <span>Adventure</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="tripType" value="relaxation" class="mr-2">
+                                    <span>Beach & Relaxation</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="tripType" value="cultural" class="mr-2">
+                                    <span>Cultural</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="tripType" value="business" class="mr-2">
+                                    <span>Business</span>
+                                </label>
+                            </div>
+
+                            <div class="glass-effect p-4 rounded-xl">
+                                <h5 class="font-semibold mb-2">Selected Destination</h5>
+                                <div id="selectedDestination" class="text-blue-400">None selected</div>
+                                <div id="selectedBudget" class="text-sm text-gray-400"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8 pt-6 border-t border-gray-700">
+                    <button id="prevBtn" onclick="previousStep()" class="glass-effect px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:bg-opacity-20 transition-all" disabled>
+                        ← Previous
+                    </button>
+                    <button id="nextBtn" onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                        Next →
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <div class="w-8 h-8 professional-accent rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">V</span>
+                    </div>
+                    <span class="text-xl font-playfair font-bold">Velvet Routes</span>
+                </div>
+                <div class="text-gray-400">
+                    © 2025 Velvet Routes. Crafted with ❤️ precision for travelers worldwide.
+                </div>
+            </div>
+        </div>
+        <script src="api-service.js"></script>
+        <script src="Script.js"></script>
+    </footer>
+
+    <script>
+    function showSlide(slideNumber) {
+        // Hide all slides
+        document.querySelectorAll('.slide-content').forEach(slide => {
+            slide.classList.remove('active');
+        });
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('[id^="tab"]').forEach(tab => {
+            tab.classList.remove('bg-blue-600', 'text-white');
+            tab.classList.add('text-gray-300');
+        });
+        
+        // Show selected slide
+        document.getElementById(`slide${slideNumber}`).classList.add('active');
+        
+        // Activate selected tab
+        const activeTab = document.getElementById(`tab${slideNumber}`);
+        activeTab.classList.add('bg-blue-600', 'text-white');
+        activeTab.classList.remove('text-gray-300');
+    }
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Auto-rotate slides
+    let currentSlide = 1;
+    setInterval(() => {
+        currentSlide = (currentSlide % 3) + 1;
+        showSlide(currentSlide);
+    }, 5000);
+
+    // Planner functions
+    let currentPlannerStep = 1;
+    const totalSteps = document.querySelectorAll('.planner-step').length;
+
+    function selectDestination(destination, budget) {
+        document.getElementById('selectedDestination').textContent = destination;
+        document.getElementById('selectedBudget').textContent = budget;
+    }
+
+    function showPlannerStep(stepNumber) {
+        // Hide all steps
+        document.querySelectorAll('.planner-step').forEach(step => {
+            step.classList.add('hidden');
+        });
+        
+        // Remove active class from all step buttons
+        document.querySelectorAll('[id^="step"]').forEach(btn => {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('text-gray-400');
+        });
+        
+        // Show selected step
+        document.getElementById(`planner-step-${stepNumber}`).classList.remove('hidden');
+        
+        // Activate selected step button
+        const activeStepBtn = document.getElementById(`step${stepNumber}-btn`);
+        if (activeStepBtn) {
+            activeStepBtn.classList.add('bg-blue-600', 'text-white');
+            activeStepBtn.classList.remove('text-gray-400');
+        }
+
+        currentPlannerStep = stepNumber;
+    }
+
+    function nextStep() {
+        if (currentPlannerStep < totalSteps) {
+            showPlannerStep(currentPlannerStep + 1);
+        }
+    }
+
+    function previousStep() {
+        if (currentPlannerStep > 1) {
+            showPlannerStep(currentPlannerStep - 1);
+        }
+    }
+
+    function closePlanner() {
+        document.getElementById('plannerModal').classList.add('hidden');
+        document.getElementById('plannerModal').classList.remove('flex');
+        currentPlannerStep = 1; 
+        showPlannerStep(1); // reset to step 1 when closing
+    }
+
+    function openPlanner() {
+        document.getElementById('plannerModal').classList.remove('hidden');
+        document.getElementById('plannerModal').classList.add('flex');
+        showPlannerStep(currentPlannerStep); // open at current step
+    }
+
+    // Initialize first step when page loads
+    document.addEventListener("DOMContentLoaded", () => {
+        showPlannerStep(1);
+        showSlide(1);
+        checkAuthStatus();
+    });
+
+    // Authentication Functions
+    function checkAuthStatus() {
+        const token = localStorage.getItem('velvetRoutesToken');
+        const user = localStorage.getItem('velvetRoutesUser');
+        
+        if (token && user) {
+            try {
+                const userData = JSON.parse(user);
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('signupBtn').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('userName').classList.remove('hidden');
+                document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                clearAuthData();
+            }
+        } else {
+            clearAuthData();
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('velvetRoutesToken');
+        localStorage.removeItem('velvetRoutesUser');
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('signupBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userName').classList.add('hidden');
+        
+        // Show success message
+        showMessage('Logged out successfully!', 'success');
+        
+        // Redirect to home after a short delay
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+
+    function clearAuthData() {
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('signupBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userName').classList.add('hidden');
+    }
+
+    function showMessage(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 
+            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('../sw.js')
+                .then((registration) => {
+                    console.log('✅ Service Worker registered:', registration);
+                })
+                .catch((error) => {
+                    console.log('❌ Service Worker registration failed:', error);
+                });
+        });
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show install button
+        const installBtn = document.createElement('button');
+        installBtn.textContent = '📱 Install App';
+        installBtn.className = 'fixed bottom-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        installBtn.onclick = () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted install prompt');
+                }
+                deferredPrompt = null;
+                installBtn.remove();
+            });
+        };
+        document.body.appendChild(installBtn);
+    });
+</script>

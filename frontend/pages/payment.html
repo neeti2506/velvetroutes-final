@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Velvet Routes</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .trip-summary {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .payment-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card-element {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .card-element:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .security-badge {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .security-badge img {
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="booking-summary.html" class="back-link">← Back to Summary</a>
+        
+        <div class="header">
+            <h1>💰 Complete Your Payment</h1>
+            <p>Secure payment powered by Stripe</p>
+        </div>
+
+        <div class="trip-summary">
+            <h3 style="margin-bottom: 15px; color: #333;">Trip Summary</h3>
+            <div class="summary-row">
+                <span class="summary-label">Destination:</span>
+                <span class="summary-value" id="payment-destination">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Travel Dates:</span>
+                <span class="summary-value" id="payment-dates">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Travelers:</span>
+                <span class="summary-value" id="payment-travelers">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Total Cost:</span>
+                <span class="summary-value" id="payment-total">$0</span>
+            </div>
+        </div>
+
+        <div class="payment-form">
+            <form id="payment-form">
+                <div class="form-group">
+                    <label class="form-label">Cardholder Name</label>
+                    <input type="text" id="cardholder-name" class="form-input" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="john@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Card Number</label>
+                    <div id="card-element" class="card-element"></div>
+                    <div id="card-errors" class="error-message"></div>
+                </div>
+
+                <button type="submit" class="pay-button" id="submit-button">
+                    Pay Now
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your payment...</p>
+            </div>
+
+            <div class="success-message" id="success-message">
+                <h3>✅ Payment Successful!</h3>
+                <p>Redirecting you to your booking confirmation...</p>
+            </div>
+        </div>
+
+        <div class="security-badge">
+            🔒 Secure SSL Encryption • Powered by Stripe
+        </div>
+    </div>
+
+    <script src="api-service.js"></script>
+    <script src="Script.js"></script>
+    <script>
+        // Initialize Stripe (Demo mode - replace with your publishable key for production)
+        // const stripe = Stripe('pk_test_YOUR_KEY_HERE');
+        // const elements = stripe.elements();
+        // const cardElement = elements.create('card');
+        // cardElement.mount('#card-element');
+        
+        // Demo mode: Use simple form validation
+        document.getElementById('card-element').style.display = 'none';
+        const cardInput = document.createElement('input');
+        cardInput.type = 'text';
+        cardInput.className = 'form-input';
+        cardInput.placeholder = 'Card Number (Demo: 4242 4242 4242 4242)';
+        cardInput.id = 'card-number';
+        cardInput.required = true;
+        document.getElementById('card-element').parentNode.appendChild(cardInput);
+        
+        const cardErrors = document.getElementById('card-errors');
+        cardInput.addEventListener('input', function() {
+            const value = this.value.replace(/\s/g, '');
+            if (value.length > 0 && !/^\d+$/.test(value)) {
+                cardErrors.textContent = 'Please enter a valid card number';
+            } else {
+                cardErrors.textContent = '';
+            }
+        });
+
+        // Load travel data
+        let paymentData = {};
+        
+        async function loadPaymentData() {
+            try {
+                await loadTravelData();
+                
+                // Update payment summary
+                document.getElementById('payment-destination').textContent = travelData.destination || 'Not specified';
+                document.getElementById('payment-dates').textContent = 
+                    `${travelData.departureDate || '-'} to ${travelData.returnDate || '-'}`;
+                document.getElementById('payment-travelers').textContent = 
+                    `${travelData.adults || 2} Adult(s), ${travelData.children || 0} Child(ren)`;
+                document.getElementById('payment-total').textContent = 
+                    `$${travelData.totalCost || 0}`;
+
+                paymentData = {
+                    destination: travelData.destination,
+                    dates: `${travelData.departureDate} to ${travelData.returnDate}`,
+                    travelers: `${travelData.adults} Adults, ${travelData.children} Children`,
+                    total: travelData.totalCost
+                };
+            } catch (error) {
+                console.error('Error loading payment data:', error);
+                showNotification('Error loading trip details', 'error');
+            }
+        }
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submit-button');
+            const loadingDiv = document.getElementById('loading');
+            
+            submitButton.disabled = true;
+            loadingDiv.classList.add('active');
+
+            try {
+                        // Create payment intent
+                const response = await fetch('http://localhost:3000/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: paymentData.total * 100, // Convert to cents
+                        currency: 'usd',
+                        metadata: paymentData
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error('Failed to create payment intent');
+                }
+
+                // Payment successful
+                loadingDiv.classList.remove('active');
+                document.getElementById('success-message').classList.add('active');
+                
+                // Show success notification
+                if (typeof showNotification !== 'undefined') {
+                    showNotification('Payment successful! Processing your booking...', 'success');
+                } else {
+                    alert('Payment successful! Processing your booking...');
+                }
+                
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    // Pass booking data via URL
+                    const params = new URLSearchParams({
+                        destination: paymentData.destination,
+                        dates: paymentData.dates,
+                        travelers: paymentData.travelers,
+                        amount: paymentData.total
+                    });
+                    window.location.href = 'confirmation.html?' + params.toString();
+                }, 2000);
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                loadingDiv.classList.remove('active');
+                submitButton.disabled = false;
+                showNotification(error.message || 'Payment failed. Please try again.', 'error');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadPaymentData);
+    </script>
+</body>
+</html>
+

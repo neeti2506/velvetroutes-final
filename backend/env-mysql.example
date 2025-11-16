@@ -1,0 +1,17 @@
+# MySQL Database Configuration
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_DATABASE=velvet_routes
+
+# JWT Secret Key (change this to a secure random string)
+JWT_SECRET=your_jwt_secret_key_change_this_in_production
+
+# External API Keys (optional - for enhanced features)
+UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+EXCHANGERATE_API_KEY=your_exchangerate_api_key
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development

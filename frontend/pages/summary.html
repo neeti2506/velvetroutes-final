@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velvet Routes - Your Premium Travel Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .service-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .service-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .service-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .service-features li {
+            color: #555;
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+            font-size: 1rem;
+        }
+
+        .service-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .cta-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 18px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(238, 90, 36, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(238, 90, 36, 0.4);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .service-card {
+                padding: 30px 20px;
+            }
+            
+            .cta-section {
+                padding: 30px 20px;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            top: 40%;
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .home-button {
+    /* Basic button styling */
+    position: fixed; /* This makes the button stay in a fixed position on the screen */
+    top: 20px;       /* Change from 'bottom' to 'top' */
+    right: 20px;     /* 20 pixels from the right side of the screen */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    /* Look and feel from your image */
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Optional: Adds a hover effect for a better user experience */
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.arrow-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-button">
+    <span class="arrow-icon">&larr;</span> Back to Home
+</a>
+    <div class="floating-elements">
+        <div class="floating-element">✈️</div>
+        <div class="floating-element">🏨</div>
+        <div class="floating-element">🌍</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 class="logo">Velvet Routes</h1>
+            <p class="tagline">Crafting Extraordinary Travel Experiences</p>
+        </header>
+
+        <div class="stats-section">
+            <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Destinations</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">10K+</span>
+                <span class="stat-label">Happy Travelers</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Support</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">5★</span>
+                <span class="stat-label">Rating</span>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="service-card">
+                <span class="service-icon">🌍</span>
+                <h3 class="service-title">Premium Destinations</h3>
+                <p class="service-description">Discover handpicked destinations around the globe, from hidden gems to iconic landmarks.</p>
+                <ul class="service-features">
+                    <li>Curated travel experiences</li>
+                    <li>Local expert recommendations</li>
+                    <li>Exclusive access to attractions</li>
+                    <li>Cultural immersion programs</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <span class="service-icon">🚗</span>
+                <h3 class="service-title">All Transport Solutions</h3>
+                <p class="service-description">Complete transportation services covering flights, trains, buses, and local transfers.</p>
+                <ul class="service-features">
+                    <li>Flight booking & management</li>
+                    <li>Ground transportation</li>
+                    <li>Airport transfers</li>
+                    <li>Multi-modal journey planning</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <span class="service-icon">🏨</span>
+                <h3 class="service-title">Luxury Accommodations</h3>
+                <p class="service-description">From boutique hotels to luxury resorts, find the perfect stay for every budget and preference.</p>
+                <ul class="service-features">
+                    <li>Hand-selected properties</li>
+                    <li>Best price guarantees</li>
+                    <li>Room upgrades & perks</li>
+                    <li>24/7 concierge support</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <span class="service-icon">💰</span>
+                <h3 class="service-title">Smart Budget Planning</h3>
+                <p class="service-description">Flexible budget options and transparent pricing to make luxury travel accessible to everyone.</p>
+                <ul class="service-features">
+                    <li>Customizable budget ranges</li>
+                    <li>Payment plan options</li>
+                    <li>Cost optimization tools</li>
+                    <li>No hidden fees policy</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <span class="service-icon">📅</span>
+                <h3 class="service-title">Flexible Date Management</h3>
+                <p class="service-description">Smart scheduling system that adapts to your preferences and finds the best travel dates.</p>
+                <ul class="service-features">
+                    <li>Dynamic date suggestions</li>
+                    <li>Seasonal pricing alerts</li>
+                    <li>Easy date modifications</li>
+                    <li>Calendar integration</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <span class="service-icon">🎯</span>
+                <h3 class="service-title">Personalized Service</h3>
+                <p class="service-description">Tailored travel solutions designed around your unique preferences and travel style.</p>
+                <ul class="service-features">
+                    <li>Personal travel consultants</li>
+                    <li>Custom itinerary creation</li>
+                    <li>Preference-based matching</li>
+                    <li>VIP treatment programs</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Embark on Your Journey?</h2>
+            <p class="cta-description">Join thousands of satisfied travelers who have chosen Velvet Routes for their unforgettable adventures. Let us transform your travel dreams into reality.</p>
+            <a href="home.html" class="cta-button">Start Planning Your Trip</a>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.service-card');
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+
+            // Add counter animation
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = counter.textContent;
+                const numericTarget = parseInt(target.replace(/[^0-9]/g, ''));
+                if (!isNaN(numericTarget)) {
+                    let current = 0;
+                    const increment = numericTarget / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= numericTarget) {
+                            counter.textContent = target;
+                            clearInterval(timer);
+                        } else {
+                            const suffix = target.replace(/[0-9]/g, '');
+                            counter.textContent = Math.floor(current) + suffix;
+                        }
+                    }, 30);
+                }
+            });
+        });
+    </script>
+    <div class="action-buttons">
+    <a href="planner.html" class="btn btn-secondary">Back: To Planner</a>
+</div>
+<script src="api-service.js"></script>
+<script src="Script.js"></script>
+</body>
+</html>

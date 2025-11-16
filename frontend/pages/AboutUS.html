@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us - Velvet Routes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 10vh;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <nav class="bg-black bg-opacity-40 backdrop-blur-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-wide">
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-400 to-yellow-300 animate-pulse">
+          VELVET ROUTES
+        </span>
+      </h1>
+      <ul class="hidden md:flex space-x-8 text-lg font-semibold">
+        <li><a href="home.html" class="hover:text-purple-300 transition">Home</a></li>
+        <li><a href="planner.html" class="hover:text-purple-300 transition">Planner</a></li>
+        <li><a href="dates_and_budget.html" class="hover:text-purple-300 transition">Dates & Budget</a></li>
+        <li><a href="booking-summary.html" class="hover:text-purple-300 transition">Summary</a></li>
+        <li><a href="AboutUS.html" class="text-purple-300 border-b-2 border-purple-300">About Us</a></li>
+        <li><a href="Contact.html" class="hover:text-purple-300 transition">Contact</a></li>
+      </ul>
+      <button class="md:hidden px-3 py-2 bg-purple-600 rounded-lg">☰</button>
+    </div>
+  </nav>
+
+  <section class="max-w-5xl mx-auto py-20 px-6 text-center">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-6 text-white drop-shadow-lg">
+      Who We Are 🌍
+    </h2>
+    <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+      At <span class="font-bold text-purple-200">Velvet Routes</span>, we’re passionate explorers who believe that travel is more than just reaching a destination — it’s about creating memories, discovering cultures, and finding new stories to tell.  
+    </p>
+  </section>
+
+  <section class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 px-6 py-16 sticky-mission-vision">
+    <div class="bg-black bg-opacity-30 p-8 rounded-3xl shadow-lg hover:scale-105 transition sticky-card">
+      <h3 class="text-2xl font-bold mb-4 text-purple-200">✨ Our Mission</h3>
+      <p class="text-gray-200 leading-relaxed">
+        To make travel planning effortless and personalized by combining technology with the spirit of adventure. With Velvet Routes, your journey starts even before you pack your bags.
+      </p>
+    </div>
+    <div class="bg-black bg-opacity-30 p-8 rounded-3xl shadow-lg hover:scale-105 transition sticky-card">
+      <h3 class="text-2xl font-bold mb-4 text-purple-200">🚀 Our Vision</h3>
+      <p class="text-gray-200 leading-relaxed">
+        To be your go-to companion in crafting unforgettable itineraries, whether you're exploring hidden gems in India or setting off for global adventures.
+      </p>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-6 py-16 text-center sticky-team">
+    <h2 class="text-3xl font-extrabold mb-10 text-white">Meet Our Team 👨‍💻👩‍💻</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-10">
+      <div class="bg-black bg-opacity-30 p-6 rounded-2xl shadow-lg hover:shadow-purple-500/50 transition">
+        <div class="mx-auto rounded-full mb-4 border-4 border-purple-400 flex items-center justify-center w-[150px] h-[150px] text-6xl">🤖</div>
+        <h3 class="font-bold text-lg">Manleen</h3>
+        <p class="text-gray-300">Project Lead</p>
+      </div>
+      <div class="bg-black bg-opacity-30 p-6 rounded-2xl shadow-lg hover:shadow-purple-500/50 transition">
+        <div class="mx-auto rounded-full mb-4 border-4 border-purple-400 flex items-center justify-center w-[150px] h-[150px] text-6xl">🤖</div>
+        <h3 class="font-bold text-lg">Iyra</h3>
+        <p class="text-gray-300">Frontend Developer</p>
+      </div>
+      <div class="bg-black bg-opacity-30 p-6 rounded-2xl shadow-lg hover:shadow-purple-500/50 transition">
+        <div class="mx-auto rounded-full mb-4 border-4 border-purple-400 flex items-center justify-center w-[150px] h-[150px] text-6xl">🤖</div>
+        <h3 class="font-bold text-lg">Neeti</h3>
+        <p class="text-gray-300">Backend Developer</p>
+      </div>
+      <div class="bg-black bg-opacity-30 p-6 rounded-2xl shadow-lg hover:shadow-purple-500/50 transition">
+        <div class="mx-auto rounded-full mb-4 border-4 border-purple-400 flex items-center justify-center w-[150px] h-[150px] text-6xl">🤖</div>
+        <h3 class="font-bold text-lg">Eknoor</h3>
+        <p class="text-gray-300">UI/UX Designer</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black bg-opacity-40 backdrop-blur-lg text-center py-6 text-gray-300">
+    © 2025 Velvet Routes ✈ | Crafted with Passion by Team Velvet Routes
+  </footer>
+
+  <style>
+    /* Sticky positioning for mission/vision and team sections */
+    .sticky-mission-vision {
+      position: sticky;
+      top: 20px;
+      z-index: 10;
+    }
+    
+    .sticky-team {
+      position: sticky;
+      top: 20px;
+      z-index: 10;
+    }
+    
+    .sticky-card {
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Simple hover effects */
+    .team-card:hover {
+      transform: translateY(-5px);
+      transition: transform 0.3s ease;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Simple mobile menu toggle
+      const mobileMenuBtn = document.querySelector('.md\\:hidden');
+      const navMenu = document.querySelector('ul.hidden.md\\:flex');
+      
+      if (mobileMenuBtn && navMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+          navMenu.classList.toggle('hidden');
+          navMenu.classList.toggle('flex');
+          navMenu.classList.toggle('flex-col');
+          navMenu.classList.toggle('absolute');
+          navMenu.classList.toggle('top-full');
+          navMenu.classList.toggle('left-0');
+          navMenu.classList.toggle('right-0');
+          navMenu.classList.toggle('bg-black');
+          navMenu.classList.toggle('bg-opacity-90');
+          navMenu.classList.toggle('p-4');
+          navMenu.classList.toggle('space-y-4');
+        });
+      }
+
+      // Add team card hover effects
+      const teamCards = document.querySelectorAll('.bg-black.bg-opacity-30');
+      teamCards.forEach(card => {
+        card.classList.add('team-card');
+      });
+    });
+  </script>
+</body>
+</html>

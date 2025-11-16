@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velvet Routes - AI Travel Planning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #667eea;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #667eea; }
+        }
+        
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.15), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .interactive-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .interactive-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .interactive-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .stats-counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-inter overflow-x-hidden">
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 gradient-bg flex items-center justify-center z-50">
+        <div class="text-center">
+            <img src="logo.png" alt="Velvet Routes Logo" class="mx-auto mb-4 w-16 h-16 rounded-full shadow-lg">
+            <div class="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h2 class="text-2xl font-playfair font-bold mb-2">Velvet Routes</h2>
+            <p class="text-gray-200">Loading your travel experience...</p>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-40 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center pulse-animation">
+                    <span class="text-white font-bold text-sm">V</span>
+                </div>
+                <h1 class="text-2xl font-playfair font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    Velvet Routes
+                </h1>
+            </div>
+            <ul class="flex gap-8 font-medium">
+                <li><a href="#features" class="hover:text-purple-400 transition-colors">Features</a></li>
+                <li><a href="#about" class="hover:text-purple-400 transition-colors">About</a></li>
+                <li><a href="Contact.html" class="hover:text-purple-400 transition-colors">Contact</a></li>
+                
+                <!-- Authentication Buttons -->
+                <li class="flex gap-3 ml-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="px-4 py-2 text-white border border-purple-300 rounded-lg hover:bg-purple-300 hover:text-purple-900 transition-all">
+                        Login
+                    </button>
+                    <button id="signupBtn" onclick="window.location.href='signup.html'" 
+                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all">
+                        Sign Up
+                    </button>
+                    <button id="logoutBtn" onclick="logout()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hidden">
+                        Logout
+                    </button>
+                    <span id="userName" class="text-white text-sm hidden"></span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen gradient-bg flex items-center parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
+            
+            <!-- Left Side - Main Content -->
+            <div class="space-y-8">
+                <h1 class="font-playfair text-6xl md:text-7xl font-bold leading-tight">
+                    Discover Your
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 typewriter">
+                        Perfect Journey
+                    </span>
+                </h1>
+                
+                <p class="text-xl text-gray-200 leading-relaxed max-w-2xl">
+                    Create personalized travel itineraries with AI-powered recommendations. 
+                    From hidden gems to popular destinations, plan your dream trip effortlessly.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="planner.html" class="interactive-button bg-white text-purple-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all shadow-lg text-center relative">
+                        Start Planning
+                    </a>
+                    <a href="home.html" class="glass-effect px-8 py-4 rounded-full font-semibold hover:bg-purple-600 hover:bg-opacity-20 transition-all text-center">
+                        Explore More
+                    </a>
+                </div>
+                
+                <!-- Interactive Stats -->
+                <div class="grid grid-cols-3 gap-6 pt-8">
+                    <div class="text-center">
+                        <div class="stats-counter" data-target="500">0</div>
+                        <div class="text-sm text-gray-300">Happy Travelers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="stats-counter" data-target="150">0</div>
+                        <div class="text-sm text-gray-300">Countries</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="stats-counter" data-target="4.9">0</div>
+                        <div class="text-sm text-gray-300">Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Interactive Features -->
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
+                
+                <!-- Interactive Demo -->
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-playfair font-bold mb-4">Try Our AI Planner</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="demoDestination" placeholder="Where do you want to go?" 
+                               class="w-full p-4 rounded-xl bg-gray-800 text-white border border-purple-600 border-opacity-30 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button onclick="demoSearch()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                            Get AI Recommendations
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feature Highlights -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600 hover:bg-opacity-20 transition-all cursor-pointer" onclick="showFeature('ai')">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                            🤖
+                        </div>
+                        <div>
+                            <div class="font-semibold">AI-Powered Planning</div>
+                            <div class="text-sm text-gray-400">Smart recommendations</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600 hover:bg-opacity-20 transition-all cursor-pointer" onclick="showFeature('hotels')">
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
+                            🏨
+                        </div>
+                        <div>
+                            <div class="font-semibold">Real Hotel Booking</div>
+                            <div class="text-sm text-gray-400">Live prices & availability</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600 hover:bg-opacity-20 transition-all cursor-pointer" onclick="showFeature('location')">
+                        <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
+                            📍
+                        </div>
+                        <div>
+                            <div class="font-semibold">Location Services</div>
+                            <div class="text-sm text-gray-400">Find nearby attractions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-playfair font-bold mb-4">Why Choose Velvet Routes</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Experience the future of travel planning with our cutting-edge features
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="feature-card glass-effect p-6 rounded-2xl hover-lift group cursor-pointer" onclick="window.location.href='planner.html'">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform floating">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Smart Matching</h3>
+                    <p class="text-gray-400">AI matches destinations to your personality and preferences</p>
+                </div>
+
+                <div class="feature-card glass-effect p-6 rounded-2xl hover-lift group cursor-pointer" onclick="window.location.href='dates_and_budget.html'">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform floating" style="animation-delay: 0.5s;">
+                        <span class="text-2xl">⚡</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Instant Itineraries</h3>
+                    <p class="text-gray-400">Generate complete travel plans in under 30 seconds</p>
+                </div>
+
+                <div class="feature-card glass-effect p-6 rounded-2xl hover-lift group cursor-pointer" onclick="window.location.href='hotel.html'">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform floating" style="animation-delay: 1s;">
+                        <span class="text-2xl">🌍</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Global Coverage</h3>
+                    <p class="text-gray-400">Access to destinations and experiences worldwide</p>
+                </div>
+
+                <div class="feature-card glass-effect p-6 rounded-2xl hover-lift group cursor-pointer" onclick="window.location.href='booking-summary.html'">
+                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform floating" style="animation-delay: 1.5s;">
+                        <span class="text-2xl">📱</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Mobile Ready</h3>
+                    <p class="text-gray-400">Access your itineraries anywhere, anytime</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="py-20 gradient-bg">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-playfair font-bold mb-8">Ready to Start Your Journey?</h2>
+            <p class="text-xl text-gray-200 mb-8">Join thousands of travelers who trust Velvet Routes for their perfect trips</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="window.location.href='signup.html'" class="interactive-button bg-white text-purple-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all shadow-lg relative">
+                    Create Free Account
+                </button>
+                <button onclick="window.location.href='planner.html'" class="glass-effect px-8 py-4 rounded-full font-semibold hover:bg-purple-600 hover:bg-opacity-20 transition-all">
+                    Start Planning Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">V</span>
+                    </div>
+                    <span class="text-xl font-playfair font-bold">Velvet Routes</span>
+                </div>
+                <div class="text-gray-400">
+                    © 2025 Velvet Routes. Crafted with ❤️ precision for travelers worldwide.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api-service.js"></script>
+    <script src="Script.js"></script>
+    <script>
+        // Loading screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+            }, 2000);
+        });
+
+        // Animated counters
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stats-counter');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = target === 4.9 ? current.toFixed(1) : Math.floor(current);
+                }, 20);
+            });
+        }
+
+        // Demo search functionality
+        function demoSearch() {
+            const destination = document.getElementById('demoDestination').value;
+            if (destination) {
+                showNotification(`Searching for ${destination}...`, 'info');
+                setTimeout(() => {
+                    window.location.href = `planner.html?search=${encodeURIComponent(destination)}`;
+                }, 1500);
+            } else {
+                showNotification('Please enter a destination', 'warning');
+            }
+        }
+
+        // Feature showcase
+        function showFeature(feature) {
+            const messages = {
+                'ai': 'Our AI analyzes your preferences to suggest perfect destinations!',
+                'hotels': 'Real-time hotel prices and availability from major booking sites!',
+                'location': 'GPS-powered location services to find attractions near you!'
+            };
+            showNotification(messages[feature], 'success');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Authentication Functions
+        function checkAuthStatus() {
+            const token = localStorage.getItem('velvetRoutesToken');
+            const user = localStorage.getItem('velvetRoutesUser');
+            
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    document.getElementById('loginBtn').classList.add('hidden');
+                    document.getElementById('signupBtn').classList.add('hidden');
+                    document.getElementById('logoutBtn').classList.remove('hidden');
+                    document.getElementById('userName').classList.remove('hidden');
+                    document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    clearAuthData();
+                }
+            } else {
+                clearAuthData();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('velvetRoutesToken');
+            localStorage.removeItem('velvetRoutesUser');
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('signupBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('userName').classList.add('hidden');
+            
+            showNotification('Logged out successfully!', 'success');
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+
+        function clearAuthData() {
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('signupBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('userName').classList.add('hidden');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            animateCounters();
+            
+            // Add keyboard support for demo search
+            document.getElementById('demoDestination').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    demoSearch();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

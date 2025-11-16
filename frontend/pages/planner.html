@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner - Velvet Routes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .planner-step {
+            display: none;
+        }
+        
+        .planner-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .destination-card.selected,
+        .budget-option.selected,
+        .transport-option.selected,
+        .accommodation-option.selected {
+            background: rgba(147, 51, 234, 0.3);
+            border-color: #9333ea;
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.4);
+        }
+        
+        .step-btn.active {
+            background: linear-gradient(135deg, #9333ea, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-inter">
+
+    <header class="gradient-bg p-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">V</span>
+                </div>
+                <h1 class="text-3xl font-playfair font-bold">Velvet Routes Planner</h1>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Authentication Buttons -->
+                <div class="flex space-x-3">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="px-4 py-2 text-white border border-white border-opacity-30 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                        Login
+                    </button>
+                    <button id="signupBtn" onclick="window.location.href='signup.html'" 
+                            class="px-4 py-2 bg-white bg-opacity-20 text-white rounded-lg hover:bg-opacity-30 transition-all">
+                        Sign Up
+                    </button>
+                    <button id="logoutBtn" onclick="logout()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hidden">
+                        Logout
+                    </button>
+                    <span id="userName" class="text-white text-sm hidden"></span>
+                </div>
+                
+                <a href="home.html" class="glass-effect px-6 py-2 rounded-xl hover:bg-white hover:bg-opacity-20 transition-all">
+                    ← Back to Home
+                </a>
+            </div>
+        </div>
+    </header>
+
+<main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-center mb-8">
+        <div class="flex items-center space-x-2 bg-gray-800 rounded-2xl p-2 overflow-x-auto">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="step1-btn" class="step-btn px-4 py-3 rounded-xl active font-medium transition-all whitespace-nowrap">
+                1. Destination
+            </button>
+            <button onclick="window.location.href='dates_and_budget.html'" id="step2-btn" class="step-btn px-4 py-3 rounded-xl text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                2. Dates & Budget
+            </button>
+            <button onclick="window.location.href='transport.html'" id="step3-btn" class="step-btn px-4 py-3 rounded-xl text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                3. Transport
+            </button>
+            <button onclick="window.location.href='hotel.html'" id="step4-btn" class="step-btn px-4 py-3 rounded-xl text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                4. Hotels
+            </button>
+            <button onclick="window.location.href='booking-summary.html'" id="step5-btn" class="step-btn px-4 py-3 rounded-xl text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                5. Summary
+            </button>
+        </div>
+    </div>
+</main>
+        <div id="step1" class="planner-step active">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-playfair font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Where do you want to go?</h2>
+                <p class="text-xl text-gray-400">Choose from our curated destinations</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-6 mb-8">
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Paris, France', '$800-1500', 'paris')">
+                    <div class="text-4xl mb-4 text-center">🗼</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Paris, France</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">City of Love & Art</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$800-1500</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-purple-600 px-2 py-1 rounded-full">Cultural</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Tokyo, Japan', '$800-1500', 'tokyo')">
+                    <div class="text-4xl mb-4 text-center">🏯</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Tokyo, Japan</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Modern meets Traditional</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$800-1500</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-blue-600 px-2 py-1 rounded-full">Adventure</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Goa, India', '$250-500', 'goa')">
+                    <div class="text-4xl mb-4 text-center">🏖️</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Goa, India</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Beach Paradise</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$250-500</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-teal-600 px-2 py-1 rounded-full">Beach</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Dubai, UAE', '$900-2000', 'dubai')">
+                    <div class="text-4xl mb-4 text-center">🏙️</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Dubai, UAE</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Luxury & Shopping</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$900-2000</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-yellow-600 px-2 py-1 rounded-full">Luxury</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('New York, USA', '$1000-2500', 'newyork')">
+                    <div class="text-4xl mb-4 text-center">🗽</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">New York, USA</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">The Big Apple</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$1000-2500</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-red-600 px-2 py-1 rounded-full">Urban</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('London, UK', '$700-1400', 'london')">
+                    <div class="text-4xl mb-4 text-center">🏰</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">London, UK</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Royal Heritage</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$700-1400</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-indigo-600 px-2 py-1 rounded-full">Historic</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Bali, Indonesia', '$600-1200', 'bali')">
+                    <div class="text-4xl mb-4 text-center">🌺</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Bali, Indonesia</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Island of Gods</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$600-1200</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded-full">Tropical</span>
+                    </div>
+                </div>
+                <div class="destination-card glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectDestination('Switzerland', '$1200-2500', 'switzerland')">
+                    <div class="text-4xl mb-4 text-center">🏔️</div>
+                    <h3 class="text-xl font-bold mb-2 text-center">Switzerland</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">Alpine Beauty</p>
+                    <div class="text-center">
+                        <div class="text-purple-400 font-bold">$1200-2500</div>
+                        <div class="text-xs text-gray-500">per person</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-xs bg-blue-600 px-2 py-1 rounded-full">Nature</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search History -->
+            <div class="glass-effect p-6 rounded-2xl mb-8" id="searchHistorySection" style="display: none;">
+                <h3 class="text-xl font-bold mb-4 text-purple-400">🔍 Your Recent Searches</h3>
+                <div id="searchHistoryList" class="space-y-3"></div>
+            </div>
+
+            <!-- Search Box -->
+            <div class="glass-effect p-6 rounded-2xl mb-8">
+                <h3 class="text-xl font-bold mb-4">Can't find your destination?</h3>
+                <div class="flex gap-4">
+                    <input type="text" id="customDestination" placeholder="Search for any city or country..." class="flex-1 p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-purple-500 focus:outline-none transition-all">
+                    <button onclick="searchDestinationAdvanced()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-4 rounded-xl font-semibold transition-all">
+                        Search
+                    </button>
+                    <button onclick="useCurrentLocation()" id="locationBtn" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 px-6 py-4 rounded-xl font-semibold transition-all flex items-center gap-2">
+                        📍 Use My Location
+                    </button>
+                </div>
+            </div>
+
+            <!-- Destination Details -->
+            <div class="glass-effect p-6 rounded-2xl mb-8" id="destinationDetails" style="display: none;">
+                <h3 class="text-xl font-bold mb-4 text-purple-400">📍 Destination Details</h3>
+                <div id="destinationInfo"></div>
+            </div>
+
+            <!-- Available Destinations (Fallback) -->
+            <div class="glass-effect p-6 rounded-2xl mb-8" id="availableDestinations" style="display: none;">
+                <h3 class="text-xl font-bold mb-4 text-purple-400">🎯 Similar Destinations Available</h3>
+                <div id="similarDestinationsList"></div>
+            </div>
+
+            <div class="glass-effect p-6 rounded-2xl mb-8">
+                <h3 class="text-xl font-bold mb-4 text-purple-400">Selected Destination</h3>
+                <div id="selectedDestination" class="text-2xl font-bold">Choose a destination above</div>
+                <div id="selectedBudget" class="text-gray-400 mt-2"></div>
+            </div>
+
+            <div class="text-center">
+                 <button onclick="window.location.href='dates_and_budget.html'" id="nextToStep2" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-4 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                 Continue to Dates & Budget →
+                </button>
+                 <button onclick="window.location.href='itinerary-planner.html'" class="mt-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 px-8 py-4 rounded-xl font-semibold transition-all">
+                 🗺️ Open Interactive Planner →
+                </button>
+            </div>
+        </div>
+
+        <div id="step2" class="planner-step">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-playfair font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">When are you traveling?</h2>
+                <p class="text-xl text-gray-400">Set your dates and budget preferences</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-effect p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-blue-400">📅 Travel Dates</h3>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Departure Date</label>
+                                <input type="date" id="departureDate" class="w-full p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none transition-all" onchange="calculateDuration()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Return Date</label>
+                                <input type="date" id="returnDate" class="w-full p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none transition-all" onchange="calculateDuration()">
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect p-4 rounded-xl text-center">
+                            <div class="text-sm text-gray-400">Trip Duration</div>
+                            <div id="tripDuration" class="text-2xl font-bold text-blue-400">Select dates</div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Quick Select</h4>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button onclick="setDuration(3)" class="p-3 border border-gray-600 rounded-xl hover:border-blue-500 hover:bg-blue-500 hover:bg-opacity-20 transition-all">3 Days</button>
+                                <button onclick="setDuration(7)" class="p-3 border border-gray-600 rounded-xl hover:border-blue-500 hover:bg-blue-500 hover:bg-opacity-20 transition-all">1 Week</button>
+                                <button onclick="setDuration(14)" class="p-3 border border-gray-600 rounded-xl hover:border-blue-500 hover:bg-blue-500 hover:bg-opacity-20 transition-all">2 Weeks</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-green-400">💰 Budget Range</h3>
+                    <div class="space-y-4">
+                        <div class="budget-option p-6 border-2 border-gray-600 rounded-xl cursor-pointer hover:border-green-500 transition-all" onclick="selectBudget('budget', 500, 1000)">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="text-xl font-bold">💰 Budget Friendly</h4>
+                                    <p class="text-gray-400">Basic comfort, great value</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold text-green-400">$500-1000</div>
+                                    <div class="text-sm text-gray-500">per person</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500">• Economy flights • Budget hotels • Local transport</div>
+                        </div>
+                        <div class="budget-option p-6 border-2 border-gray-600 rounded-xl cursor-pointer hover:border-green-500 transition-all" onclick="selectBudget('comfort', 1000, 2500)">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="text-xl font-bold">🏨 Comfort Travel</h4>
+                                    <p class="text-gray-400">Perfect balance of comfort & cost</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold text-green-400">$1000-2500</div>
+                                    <div class="text-sm text-gray-500">per person</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500">• Premium economy • 4-star hotels • Mix of transport</div>
+                        </div>
+                        <div class="budget-option p-6 border-2 border-gray-600 rounded-xl cursor-pointer hover:border-green-500 transition-all" onclick="selectBudget('luxury', 2500, 5000)">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="text-xl font-bold">🌟 Luxury Experience</h4>
+                                    <p class="text-gray-400">Premium comfort & exclusive experiences</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold text-green-400">$2500+</div>
+                                    <div class="text-sm text-gray-500">per person</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500">• Business class • 5-star hotels • Private transport</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-effect p-8 rounded-2xl mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-orange-400">👥 How many travelers?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Adults (18+)</label>
+                        <select id="adults" class="w-full p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-orange-500 focus:outline-none transition-all" onchange="updateTotalCost()">
+                            <option value="1">1 Adult</option>
+                            <option value="2" selected>2 Adults</option>
+                            <option value="3">3 Adults</option>
+                            <option value="4">4 Adults</option>
+                            <option value="5">5+ Adults</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Children (2-17)</label>
+                        <select id="children" class="w-full p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-orange-500 focus:outline-none transition-all" onchange="updateTotalCost()">
+                            <option value="0" selected>0 Children</option>
+                            <option value="1">1 Child</option>
+                            <option value="2">2 Children</option>
+                            <option value="3">3 Children</option>
+                            <option value="4">4+ Children</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Infants (Under 2)</label>
+                        <select id="infants" class="w-full p-4 rounded-xl bg-gray-800 text-white border border-gray-600 focus:border-orange-500 focus:outline-none transition-all">
+                            <option value="0" selected>0 Infants</option>
+                            <option value="1">1 Infant</option>
+                            <option value="2">2 Infants</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button onclick="showStep(1)" class="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-xl font-semibold transition-all">
+                    ← Back to Destinations
+                </button>
+                <button onclick="showStep(3)" id="nextToStep3" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-4 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Continue to Transport →
+                </button>
+            </div>
+        </div>
+
+        <div id="step3" class="planner-step">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-playfair font-bold mb-4 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">How will you travel?</h2>
+                <p class="text-xl text-gray-400">Choose your flight and local transportation</p>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-indigo-400">✈️ Flight Options</h3>
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectTransport('economy', 400, 800)">
+                        <div class="text-3xl mb-4 text-center">🛫</div>
+                        <h4 class="text-xl font-bold mb-3 text-center">Economy Class</h4>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Baggage:</span>
+                                <span>23kg included</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Meals:</span>
+                                <span>Basic meals</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Seat:</span>
+                                <span>Standard</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-400">$400-800</div>
+                            <div class="text-sm text-gray-500">round trip</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectTransport('business', 1200, 2500)">
+                        <div class="text-3xl mb-4 text-center">🥂</div>
+                        <h4 class="text-xl font-bold mb-3 text-center">Business Class</h4>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Baggage:</span>
+                                <span>32kg included</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Meals:</span>
+                                <span>Premium dining</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Seat:</span>
+                                <span>Lie-flat bed</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-400">$1200-2500</div>
+                            <div class="text-sm text-gray-500">round trip</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectTransport('first', 3000, 6000)">
+                        <div class="text-3xl mb-4 text-center">👑</div>
+                        <h4 class="text-xl font-bold mb-3 text-center">First Class</h4>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Baggage:</span>
+                                <span>Unlimited</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Meals:</span>
+                                <span>Gourmet à la carte</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Seat:</span>
+                                <span>Private suite</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-400">$3000+</div>
+                            <div class="text-sm text-gray-500">round trip</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-cyan-400">🚗 Local Transportation</h3>
+                <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectLocalTransport('rental', 30, 80)">
+                        <div class="text-3xl mb-4 text-center">🚗</div>
+                        <h4 class="text-lg font-bold mb-2 text-center">Car Rental</h4>
+                        <p class="text-sm text-gray-400 mb-3 text-center">Freedom to explore at your pace</p>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-cyan-400">$30-80</div>
+                            <div class="text-xs text-gray-500">per day</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectLocalTransport('public', 10, 25)">
+                        <div class="text-3xl mb-4 text-center">🚇</div>
+                        <h4 class="text-lg font-bold mb-2 text-center">Public Transport</h4>
+                        <p class="text-sm text-gray-400 mb-3 text-center">Cost-effective and authentic</p>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-cyan-400">$10-25</div>
+                            <div class="text-xs text-gray-500">per day</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectLocalTransport('ride-sharing', 15, 40)">
+                        <div class="text-3xl mb-4 text-center">🚕</div>
+                        <h4 class="text-lg font-bold mb-2 text-center">Ride Sharing</h4>
+                        <p class="text-sm text-gray-400 mb-3 text-center">Convenient and on-demand</p>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-cyan-400">$15-40</div>
+                            <div class="text-xs text-gray-500">per ride</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-option glass-effect p-6 rounded-2xl cursor-pointer hover-lift transition-all" onclick="selectLocalTransport('private-driver', 100, 300)">
+                        <div class="text-3xl mb-4 text-center">👨‍✈️</div>
+                        <h4 class="text-lg font-bold mb-2 text-center">Private Driver</h4>
+                        <p class="text-sm text-gray-400 mb-3 text-center">Ultimate comfort and luxury</p>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-cyan-400">$100-300</div>
+                            <div class="text-xs text-gray-500">per day</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button onclick="window.location.href = 'dates_and_budget.html'" class="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-xl font-semibold transition-all">
+                ← Back to Dates & Budget
+                </button>
+                <button onclick="window.location.href = 'hotel.html'" id="nextToStep4" class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 px-8 py-4 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                 Continue to Hotels →
+                </button>
+            </div>
+        </div>
+
+        <div id="step4" class="planner-step">
+            </div>
+
+        <div id="step5" class="planner-step">
+            </div>
+    </main>
+
+    <footer class="p-6 text-center text-gray-400">
+        © 2025 Velvet Routes. All rights reserved.
+    </footer>
+    
+    <script src="api-service.js"></script>
+    <script src="api-integrations.js"></script>
+    <script src="real-apis.js"></script>
+    <script src="hotel-search-api.js"></script>
+    <script src="Script.js"></script>
+    <script>
+        // Enhanced destination search with details and history
+        let currentUser = null;
+
+        // Load user and search history on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            const userData = sessionStorage.getItem('currentUser');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                await loadSearchHistory();
+            }
+
+            // Check for Enter key in search box
+            const searchInput = document.getElementById('customDestination');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchDestinationAdvanced();
+                    }
+                });
+            }
+        });
+
+        // Load and display search history
+        async function loadSearchHistory() {
+            if (!currentUser) return;
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/users/${currentUser.id}/search-history`);
+                const data = await response.json();
+
+                if (data.success && data.searchHistory && data.searchHistory.length > 0) {
+                    const historySection = document.getElementById('searchHistorySection');
+                    const historyList = document.getElementById('searchHistoryList');
+                    
+                    historySection.style.display = 'block';
+                    historyList.innerHTML = '';
+
+                    data.searchHistory.slice(-5).reverse().forEach(search => {
+                        const item = document.createElement('div');
+                        item.className = 'p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-all';
+                        item.onclick = () => {
+                            document.getElementById('customDestination').value = search.destination;
+                            if (search.details) {
+                                displayDestinationDetails(search.details);
+                            }
+                            searchDestinationAdvanced();
+                        };
+                        
+                        const date = new Date(search.timestamp).toLocaleDateString();
+                        item.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">${search.destination}</span>
+                                <span class="text-sm text-gray-400">${date}</span>
+                            </div>
+                            ${search.details ? `<div class="text-sm text-gray-500 mt-1">${search.details.region || ''} • ${search.details.population ? formatNumber(search.details.population) : ''}</div>` : ''}
+                        `;
+                        historyList.appendChild(item);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading search history:', error);
+            }
+        }
+
+        // Enhanced search with details and localStorage
+        async function searchDestinationAdvanced() {
+            const searchQuery = document.getElementById('customDestination').value.trim();
+            
+            if (!searchQuery) {
+                showNotification('Please enter a destination to search.', 'warning');
+                return;
+            }
+
+            try {
+                // Show loading
+                document.getElementById('destinationDetails').style.display = 'block';
+                document.getElementById('destinationInfo').innerHTML = '<p class="text-gray-400">Searching...</p>';
+
+                // Save search query to localStorage immediately
+                saveLocationToStorage(searchQuery);
+
+                // Search using REST Countries API
+                let countries = [];
+                try {
+                    const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(searchQuery)}?fields=name,capital,flags,population,region,subregion,currencies,languages,timezones,area`);
+                    countries = await response.json();
+                    
+                    // Handle error response
+                    if (!Array.isArray(countries)) {
+                        countries = [];
+                    }
+                } catch (fetchError) {
+                    console.error('API fetch error:', fetchError);
+                    countries = [];
+                }
+
+                if (countries && countries.length > 0 && countries[0].name) {
+                    const country = countries[0];
+                    const details = {
+                        name: country.name.common,
+                        capital: country.capital?.[0] || 'N/A',
+                        region: country.region,
+                        subregion: country.subregion,
+                        population: country.population,
+                        currency: Object.values(country.currencies || {})[0]?.name || 'N/A',
+                        languages: Object.values(country.languages || {}).join(', ') || 'N/A',
+                        timezones: country.timezones.join(', '),
+                        area: country.area
+                    };
+
+                    // Save detailed location info to localStorage
+                    saveLocationDetailsToStorage(details);
+
+                    // Search for hotels using real hotel APIs
+                    showNotification('Searching for hotels...', 'info');
+                    const hotels = await searchHotelsForDestination(searchQuery, details.capital || details.name);
+                    
+                    // Display destination with hotels
+                    displayDestinationWithHotels(details, hotels, searchQuery);
+
+                    // Estimate budget
+                    const estimatedBudget = estimateDestinationBudget(details.region, details.capital || details.name);
+                    selectDestination(details.capital || details.name, estimatedBudget, 'custom');
+
+                    // Save to search history if user is logged in
+                    if (currentUser) {
+                        try {
+                            await fetch(`http://localhost:3000/api/users/${currentUser.id}/search-history`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    destination: details.capital || details.name,
+                                    details: details
+                                })
+                            });
+                            await loadSearchHistory();
+                        } catch (error) {
+                            console.error('Error saving search history:', error);
+                        }
+                    }
+
+                    showNotification(`Found information about ${details.name}!`, 'success');
+                } else {
+                    // Show similar destinations
+                    showSimilarDestinations(searchQuery);
+                    showNotification('Exact match not found. Showing similar destinations.', 'info');
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showNotification('Unable to search destination. Please try again.', 'error');
+                document.getElementById('destinationDetails').style.display = 'none';
+            }
+        }
+
+        // Save location to localStorage
+        function saveLocationToStorage(location) {
+            const locations = JSON.parse(localStorage.getItem('velvetRoutesLocations') || '[]');
+            const locationData = {
+                name: location,
+                timestamp: new Date().toISOString(),
+                type: 'search'
+            };
+            
+            // Add to beginning of array
+            locations.unshift(locationData);
+            
+            // Keep only last 10 searches
+            if (locations.length > 10) {
+                locations.splice(10);
+            }
+            
+            localStorage.setItem('velvetRoutesLocations', JSON.stringify(locations));
+            console.log('Location saved to localStorage:', location);
+        }
+
+        // Save detailed location info to localStorage
+        function saveLocationDetailsToStorage(details) {
+            const locationDetails = {
+                ...details,
+                timestamp: new Date().toISOString(),
+                type: 'detailed'
+            };
+            
+            localStorage.setItem('velvetRoutesCurrentLocation', JSON.stringify(locationDetails));
+            console.log('Location details saved to localStorage:', details);
+        }
+
+        // Get current location from localStorage
+        function getCurrentLocationFromStorage() {
+            return JSON.parse(localStorage.getItem('velvetRoutesCurrentLocation') || 'null');
+        }
+
+        // Get all saved locations from localStorage
+        function getSavedLocationsFromStorage() {
+            return JSON.parse(localStorage.getItem('velvetRoutesLocations') || '[]');
+        }
+
+        // Display destination details
+        function displayDestinationDetails(details) {
+            const infoDiv = document.getElementById('destinationInfo');
+            infoDiv.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Country</div>
+                        <div class="font-bold text-lg">${details.name}</div>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Capital</div>
+                        <div class="font-bold text-lg">${details.capital}</div>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Region</div>
+                        <div class="font-bold">${details.region}</div>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Population</div>
+                        <div class="font-bold">${formatNumber(details.population)}</div>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Currency</div>
+                        <div class="font-bold">${details.currency}</div>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Languages</div>
+                        <div class="font-bold text-sm">${details.languages}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('destinationDetails').style.display = 'block';
+        }
+
+        // Show similar destinations
+        function showSimilarDestinations(query) {
+            const availableDiv = document.getElementById('availableDestinations');
+            const listDiv = document.getElementById('similarDestinationsList');
+            
+            availableDiv.style.display = 'block';
+            
+            // Get all predefined destinations
+            const predefinedDestinations = [
+                { name: 'Paris, France', emoji: '🗼', category: 'Cultural' },
+                { name: 'Tokyo, Japan', emoji: '🏯', category: 'Adventure' },
+                { name: 'Goa, India', emoji: '🏖️', category: 'Beach' },
+                { name: 'Dubai, UAE', emoji: '🏙️', category: 'Luxury' },
+                { name: 'New York, USA', emoji: '🗽', category: 'Urban' },
+                { name: 'London, UK', emoji: '🏰', category: 'Historic' },
+                { name: 'Bali, Indonesia', emoji: '🌺', category: 'Tropical' },
+                { name: 'Switzerland', emoji: '🏔️', category: 'Nature' }
+            ];
+            
+            // Find similar destinations
+            const similar = predefinedDestinations.filter(dest => 
+                dest.name.toLowerCase().includes(query.toLowerCase()) ||
+                query.toLowerCase().includes(dest.name.toLowerCase().split(',')[0])
+            );
+            
+            if (similar.length > 0) {
+                listDiv.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${similar.map(dest => `
+                            <div class="destination-card glass-effect-alt p-4 rounded-xl cursor-pointer hover:bg-purple-600 hover:bg-opacity-30 transition-all" onclick="selectDestination('${dest.name}', '$800-1500', '${dest.name.toLowerCase().replace(/\s+/g, '')}')">
+                                <div class="text-4xl mb-2 text-center">${dest.emoji}</div>
+                                <h4 class="text-center font-bold">${dest.name}</h4>
+                                <p class="text-sm text-center text-gray-400">${dest.category}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                listDiv.innerHTML = `
+                    <p class="text-gray-400">No similar destinations found. Please try searching for:</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        ${predefinedDestinations.map(d => `<li class="text-gray-300">${d.name}</li>`).join('')}
+                    </ul>
+                `;
+            }
+        }
+
+        // Estimate budget based on region
+        function estimateDestinationBudget(region, destination) {
+            const budgets = {
+                'Europe': '$800-1500',
+                'Asia': '$600-1200',
+                'Americas': '$700-1400',
+                'Africa': '$500-1000',
+                'Oceania': '$1000-2000'
+            };
+            return budgets[region] || '$600-1500';
+        }
+
+        // Format large numbers
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // Use current location to find nearby destinations
+        async function useCurrentLocation() {
+            const locationBtn = document.getElementById('locationBtn');
+            const originalText = locationBtn.innerHTML;
+            
+            try {
+                // Disable button and show loading
+                locationBtn.disabled = true;
+                locationBtn.innerHTML = '📍 Getting location...';
+                
+                // Use browser's geolocation API
+                if (!navigator.geolocation) {
+                    showNotification('Geolocation is not supported by this browser.', 'error');
+                    return;
+                }
+
+                // Get current position
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    });
+                });
+
+                const { latitude, longitude } = position.coords;
+                
+                // Reverse geocoding to get city and country
+                try {
+                    const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+                    const data = await response.json();
+                    
+                    if (data.city && data.countryName) {
+                        const location = {
+                            city: data.city,
+                            country: data.countryName,
+                            latitude: latitude,
+                            longitude: longitude,
+                            address: data.locality || data.city,
+                            region: data.principalSubdivision || '',
+                            countryCode: data.countryCode || ''
+                        };
+                        
+                        // Display location info
+                        document.getElementById('destinationDetails').style.display = 'block';
+                        const infoDiv = document.getElementById('destinationInfo');
+                        infoDiv.innerHTML = locationInfoHTML(location);
+                        
+                        showNotification(`Found your location: ${location.city}, ${location.country}`, 'success');
+                        
+                        // Save location to localStorage
+                        localStorage.setItem('velvetRoutesCurrentLocation', JSON.stringify(location));
+                        
+                    } else {
+                        throw new Error('Could not determine location details');
+                    }
+                } catch (geocodeError) {
+                    console.error('Geocoding error:', geocodeError);
+                    // Fallback: use coordinates directly
+                    const location = {
+                        city: 'Current Location',
+                        country: 'Unknown',
+                        latitude: latitude,
+                        longitude: longitude,
+                        address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                    };
+                    
+                    document.getElementById('destinationDetails').style.display = 'block';
+                    const infoDiv = document.getElementById('destinationInfo');
+                    infoDiv.innerHTML = locationInfoHTML(location);
+                    
+                    showNotification('Found your coordinates. Please search for a nearby city.', 'info');
+                }
+
+            } catch (error) {
+                console.error('Location error:', error);
+                let errorMessage = 'Unable to get your location. ';
+                
+                if (error.code === 1) { // PERMISSION_DENIED
+                    errorMessage += 'Please allow location access in your browser settings and try again.';
+                } else if (error.code === 2) { // POSITION_UNAVAILABLE
+                    errorMessage += 'Location information is unavailable.';
+                } else if (error.code === 3) { // TIMEOUT
+                    errorMessage += 'Location request timed out.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                showNotification(errorMessage, 'error');
+                
+                // Show manual search option
+                document.getElementById('destinationDetails').style.display = 'block';
+                const infoDiv = document.getElementById('destinationInfo');
+                infoDiv.innerHTML = `
+                    <div class="text-center p-6">
+                        <p class="text-gray-400 mb-4">Unable to get your location automatically.</p>
+                        <input type="text" id="manualLocationInput" placeholder="Enter your city or location..." 
+                               class="w-full p-3 rounded-xl bg-gray-800 text-white border border-purple-600 border-opacity-30 mb-4">
+                        <button onclick="searchManualLocation()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                            Search Location
+                        </button>
+                    </div>
+                `;
+            } finally {
+                locationBtn.disabled = false;
+                locationBtn.innerHTML = originalText;
+            }
+        }
+
+        // Manual location search function
+        function searchManualLocation() {
+            const manualInput = document.getElementById('manualLocationInput');
+            const location = manualInput.value.trim();
+            
+            if (location) {
+                document.getElementById('customDestination').value = location;
+                searchDestinationAdvanced();
+                showNotification(`Searching for ${location}...`, 'info');
+            } else {
+                showNotification('Please enter a location', 'warning');
+            }
+        }
+
+        function locationInfoHTML(location) {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Current Location</div>
+                        <div class="font-bold text-lg">📍 ${location.city}, ${location.country}</div>
+                        ${location.address ? `<div class="text-sm text-gray-500 mt-1">${location.address}</div>` : ''}
+                    </div>
+                    ${location.name ? `
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Country</div>
+                        <div class="font-bold text-lg">${location.name}</div>
+                        ${location.flag ? `<img src="${location.flag}" class="w-8 h-6 mt-2" alt="Flag">` : ''}
+                    </div>
+                    ` : ''}
+                    ${location.capital ? `
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Capital</div>
+                        <div class="font-bold">${location.capital}</div>
+                    </div>
+                    ` : ''}
+                    ${location.population ? `
+                    <div class="p-4 bg-gray-800 rounded-lg">
+                        <div class="text-sm text-gray-400">Population</div>
+                        <div class="font-bold">${formatNumber(location.population)}</div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="mt-4 text-center">
+                    <button onclick="selectLocationForTravel('${location.city}', '${location.country}')" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                        Use This Location for Trip
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectLocationForTravel(city, country) {
+            const destination = `${city}, ${country}`;
+            const budget = estimateDestinationBudgetByLocation(country);
+            
+            selectDestination(destination, budget, 'current-location');
+            showNotification(`Selected ${destination} for your trip!`, 'success');
+            
+            if (currentUser) {
+                fetch(`http://localhost:3000/api/users/${currentUser.id}/search-history`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        destination: destination,
+                        details: { city, country }
+                    })
+                }).catch(err => console.error('Error saving to history:', err));
+            }
+        }
+
+        function estimateDestinationBudgetByLocation(country) {
+            const expensiveCountries = ['United States', 'United Kingdom', 'France', 'Germany', 'Switzerland', 'Japan', 'Australia'];
+            const moderateCountries = ['Spain', 'Italy', 'Greece', 'Thailand', 'Malaysia', 'Brazil', 'Mexico'];
+            
+            if (expensiveCountries.some(c => country.includes(c))) {
+                return '$1000-2500';
+            } else if (moderateCountries.some(c => country.includes(c))) {
+                return '$600-1500';
+            }
+            return '$500-1200';
+        }
+
+        // Search for hotels in destination
+        async function searchHotelsForDestination(destination, city) {
+            try {
+                if (window.RealAPIs && window.RealAPIs.searchRealHotels) {
+                    const hotels = await window.RealAPIs.searchRealHotels(destination, null, null, 2);
+                    return hotels;
+                }
+                return generateMockHotels(destination, city);
+            } catch (error) {
+                console.error('Hotel search error:', error);
+                return generateMockHotels(destination, city);
+            }
+        }
+
+        // Generate mock hotels based on location
+        function generateMockHotels(destination, city) {
+            const hotelTypes = [
+                { name: 'Luxury Resort', price: 200, stars: 5, amenities: ['Spa', 'Pool', 'Gym', 'Restaurant'] },
+                { name: 'Business Hotel', price: 100, stars: 4, amenities: ['Wifi', 'Gym', 'Restaurant'] },
+                { name: 'Boutique Hotel', price: 80, stars: 4, amenities: ['Wifi', 'Restaurant', 'Bar'] },
+                { name: 'Budget Inn', price: 40, stars: 3, amenities: ['Wifi', 'Parking', 'Breakfast'] }
+            ];
+
+            return hotelTypes.map((type, i) => ({
+                id: `hotel_${Date.now()}_${i}`,
+                name: `${type.name} ${city || destination}`,
+                address: `${city || destination} City Center`,
+                location: city || destination,
+                price: type.price + Math.floor(Math.random() * 50),
+                stars: type.stars,
+                rating: (Math.random() * 0.8 + 3.5).toFixed(1),
+                reviews: Math.floor(Math.random() * 500 + 50),
+                amenities: type.amenities,
+                image: `https://source.unsplash.com/600x400/?hotel,${city || destination}`
+            }));
+        }
+
+        // Display destination with hotels
+        function displayDestinationWithHotels(details, hotels, searchQuery) {
+            const infoDiv = document.getElementById('destinationInfo');
+            
+            infoDiv.innerHTML = `
+                <div class="mb-6">
+                    <h4 class="text-lg font-bold mb-3 text-purple-400">📍 Destination Information</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Country</div>
+                            <div class="font-bold">${details.name}</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Capital</div>
+                            <div class="font-bold">${details.capital}</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Region</div>
+                            <div class="font-bold">${details.region}</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Population</div>
+                            <div class="font-bold">${formatNumber(details.population)}</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Currency</div>
+                            <div class="font-bold">${details.currency}</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">Languages</div>
+                            <div class="font-bold text-sm">${details.languages}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-lg font-bold mb-3 text-purple-400">🏨 Available Hotels</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${hotels.map(hotel => `
+                            <div class="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-all cursor-pointer" onclick="selectHotelFromSearch('${hotel.name}', ${hotel.price})">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <h5 class="font-bold">${hotel.name}</h5>
+                                        <div class="flex items-center gap-1 text-yellow-400 text-sm">${'⭐'.repeat(hotel.stars)}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-green-400">$${hotel.price}</div>
+                                        <div class="text-xs text-gray-400">per night</div>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-2">📍 ${hotel.address || hotel.location}</p>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-yellow-400">⭐ ${hotel.rating}</span>
+                                    <span class="text-gray-400 text-sm">(${hotel.reviews} reviews)</span>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    ${hotel.amenities.map(a => `<span class="text-xs bg-purple-600 px-2 py-1 rounded">${a}</span>`).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="confirmDestination('${details.capital || details.name}')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                        ✅ Confirm Destination
+                    </button>
+                    <button onclick="window.location.href='dates_and_budget.html'" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 px-6 py-3 rounded-xl font-semibold transition-all">
+                        Continue Planning →
+                    </button>
+                </div>
+            `;
+
+            travelData.locationDetails = details;
+            travelData.availableHotels = hotels;
+            saveTravelData();
+        }
+
+        // Authentication Functions
+        function checkAuthStatus() {
+            const token = localStorage.getItem('velvetRoutesToken');
+            const user = localStorage.getItem('velvetRoutesUser');
+            
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    document.getElementById('loginBtn').classList.add('hidden');
+                    document.getElementById('signupBtn').classList.add('hidden');
+                    document.getElementById('logoutBtn').classList.remove('hidden');
+                    document.getElementById('userName').classList.remove('hidden');
+                    document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    clearAuthData();
+                }
+            } else {
+                clearAuthData();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('velvetRoutesToken');
+            localStorage.removeItem('velvetRoutesUser');
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('signupBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('userName').classList.add('hidden');
+            
+            showMessage('Logged out successfully!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 1000);
+        }
+
+        function clearAuthData() {
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('signupBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('userName').classList.add('hidden');
+        }
+
+        function showMessage(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize authentication status when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+        });
+
+        function selectHotelFromSearch(hotelName, price) {
+            travelData.selectedHotel = { name: hotelName, price: price };
+            saveTravelData();
+            showNotification(`Selected: ${hotelName}`, 'success');
+        }
+
+        function confirmDestination(destination) {
+            const budget = estimateDestinationBudget('', destination);
+            selectDestination(destination, budget, 'custom');
+            showNotification(`Destination confirmed: ${destination}!`, 'success');
+        }
+    </script>
+
+</body>
+</html>
